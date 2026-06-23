@@ -33,8 +33,7 @@ namespace LimboPuzzleAR.Main.Views
                 .AddTo(this);
 
             _timeViewModel.IsTimeUp
-                .Where(isTimeUp => isTimeUp)
-                .Subscribe(_ => ApplyTimeUp())
+                .Subscribe(ApplyTimeUpState)
                 .AddTo(this);
         }
 
@@ -53,6 +52,7 @@ namespace LimboPuzzleAR.Main.Views
 
             stateText.text = state switch
             {
+                OniState.Idle => "待機中",
                 OniState.Safe => "積め！",
                 OniState.Warning => "来るぞ...",
                 OniState.Watching => "離すな！",
@@ -69,6 +69,17 @@ namespace LimboPuzzleAR.Main.Views
             }
 
             stateText.text = "終了！";
+        }
+
+        private void ApplyTimeUpState(bool isTimeUp)
+        {
+            if (isTimeUp)
+            {
+                ApplyTimeUp();
+                return;
+            }
+
+            ApplyState(_oniViewModel.CurrentState.CurrentValue);
         }
     }
 }

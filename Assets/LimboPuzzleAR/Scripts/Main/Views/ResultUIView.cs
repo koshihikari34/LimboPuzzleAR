@@ -1,5 +1,4 @@
 using LimboPuzzleAR.Common.Services;
-using LimboPuzzleAR.Main.Models;
 using LimboPuzzleAR.Main.ViewModels;
 using R3;
 using UnityEngine;
@@ -125,7 +124,7 @@ namespace LimboPuzzleAR.Main.Views
             SetResultVisible(false);
             _stoneViewModel.ResetForRetry();
             _timeViewModel.Reset();
-            _oniViewModel.SetState(OniState.Safe);
+            _oniViewModel.ResetToIdle();
             _gameStartViewModel.ResetAndStartCountdown();
         }
     }
