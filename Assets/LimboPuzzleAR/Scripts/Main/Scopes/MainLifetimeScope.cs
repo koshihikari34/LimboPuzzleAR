@@ -22,6 +22,8 @@ namespace LimboPuzzleAR.Main.Scopes
         [SerializeField, Tooltip("AR設置点から積み場中心までの相対位置。左に鬼、右に積み場の構図調整に使う。")]
         private Vector3 stackCenterOffsetMeters = Vector3.zero;
         [SerializeField, Min(1f)] private float gameDurationSeconds = 60f;
+        [SerializeField, Min(0.1f)] private float startCountdownSeconds = 3f;
+        [SerializeField, Min(0.1f)] private float startLabelSeconds = 0.5f;
 
 #if UNITY_EDITOR
         [SerializeField] private bool useEditorPlacement = true;
@@ -52,11 +54,13 @@ namespace LimboPuzzleAR.Main.Scopes
             builder.Register<StoneStackModel>(Lifetime.Scoped);
             builder.Register<ScoreModel>(Lifetime.Scoped);
             builder.Register(_ => new TimeModel(gameDurationSeconds), Lifetime.Scoped);
+            builder.Register(_ => new GameStartModel(startCountdownSeconds, startLabelSeconds), Lifetime.Scoped);
             builder.Register<OniModel>(Lifetime.Scoped);
             builder.Register<OniStateMachine>(Lifetime.Scoped);
             builder.Register<IScoreRepository, PlayerPrefsScoreRepository>(Lifetime.Scoped);
             builder.Register<IStonePlacementService, StonePlacementService>(Lifetime.Scoped);
             builder.Register<StoneViewModel>(Lifetime.Scoped);
+            builder.Register<GameStartViewModel>(Lifetime.Scoped);
             builder.Register<OniViewModel>(Lifetime.Scoped);
             builder.Register<TimeViewModel>(Lifetime.Scoped);
         }

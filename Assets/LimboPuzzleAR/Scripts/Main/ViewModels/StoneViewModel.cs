@@ -18,6 +18,7 @@ namespace LimboPuzzleAR.Main.ViewModels
         private readonly ScoreModel _scoreModel;
         private readonly OniModel _oniModel;
         private readonly TimeModel _timeModel;
+        private readonly GameStartModel _gameStartModel;
         private readonly PlacementModel _placementModel;
         private readonly IStonePlacementService _stonePlacementService;
         private readonly ReactiveProperty<Vector3> _holdPosition = new();
@@ -29,6 +30,7 @@ namespace LimboPuzzleAR.Main.ViewModels
             ScoreModel scoreModel,
             OniModel oniModel,
             TimeModel timeModel,
+            GameStartModel gameStartModel,
             PlacementModel placementModel,
             IStonePlacementService stonePlacementService)
         {
@@ -37,6 +39,7 @@ namespace LimboPuzzleAR.Main.ViewModels
             _scoreModel = scoreModel;
             _oniModel = oniModel;
             _timeModel = timeModel;
+            _gameStartModel = gameStartModel;
             _placementModel = placementModel;
             _stonePlacementService = stonePlacementService;
         }
@@ -61,6 +64,11 @@ namespace LimboPuzzleAR.Main.ViewModels
         {
             // 仕様: タイムアップ後は新しい操作を受け付けない。
             if (_timeModel.IsTimeUp.CurrentValue)
+            {
+                return false;
+            }
+
+            if (!_gameStartModel.IsPlaying.CurrentValue)
             {
                 return false;
             }
@@ -100,6 +108,11 @@ namespace LimboPuzzleAR.Main.ViewModels
                 return false;
             }
 
+            if (!_gameStartModel.IsPlaying.CurrentValue)
+            {
+                return false;
+            }
+
             if (_oniModel.CurrentState.CurrentValue == OniState.Attack)
             {
                 return false;
@@ -126,6 +139,11 @@ namespace LimboPuzzleAR.Main.ViewModels
         public bool TryRelease()
         {
             if (_timeModel.IsTimeUp.CurrentValue)
+            {
+                return false;
+            }
+
+            if (!_gameStartModel.IsPlaying.CurrentValue)
             {
                 return false;
             }

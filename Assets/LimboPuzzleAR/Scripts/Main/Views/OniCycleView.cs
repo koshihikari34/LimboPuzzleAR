@@ -20,15 +20,18 @@ namespace LimboPuzzleAR.Main.Views
 
         private OniViewModel _oniViewModel;
         private TimeViewModel _timeViewModel;
+        private GameStartViewModel _gameStartViewModel;
         private Coroutine _cycleCoroutine;
 
         [Inject]
         public void Construct(
             OniViewModel oniViewModel,
-            TimeViewModel timeViewModel)
+            TimeViewModel timeViewModel,
+            GameStartViewModel gameStartViewModel)
         {
             _oniViewModel = oniViewModel;
             _timeViewModel = timeViewModel;
+            _gameStartViewModel = gameStartViewModel;
         }
 
         private void Start()
@@ -42,15 +45,17 @@ namespace LimboPuzzleAR.Main.Views
                 .Subscribe(_ => StopCycle())
                 .AddTo(this);
 
-            if (autoCycle)
-            {
-                RestartCycle();
-            }
+            _gameStartViewModel.IsPlaying
+                .Where(isPlaying => isPlaying)
+                .Subscribe(_ => RestartCycle())
+                .AddTo(this);
         }
 
         private void RestartCycle()
         {
-            if (!autoCycle || _timeViewModel.IsTimeUp.CurrentValue)
+            if (!autoCycle
+                || !_gameStartViewModel.IsPlaying.CurrentValue
+                || _timeViewModel.IsTimeUp.CurrentValue)
             {
                 return;
             }
@@ -79,7 +84,7 @@ namespace LimboPuzzleAR.Main.Views
             var state = _oniViewModel.CurrentState.CurrentValue;
             yield return new WaitForSeconds(GetDurationSeconds(state));
 
-            if (_timeViewModel.IsTimeUp.CurrentValue)
+            if (!_gameStartViewModel.IsPlaying.CurrentValue || _timeViewModel.IsTimeUp.CurrentValue)
             {
                 _cycleCoroutine = null;
                 yield break;
