@@ -26,6 +26,11 @@ namespace LimboPuzzleAR.Main.ViewModels
             _model.StartCountdown();
         }
 
+        public void ResetAndStartCountdown()
+        {
+            _model.ResetAndStartCountdown();
+        }
+
         public void Tick(float deltaSeconds)
         {
             _model.Tick(deltaSeconds);

@@ -15,5 +15,10 @@ namespace LimboPuzzleAR.Main.Models
         {
             _clearSetCount.Value++;
         }
+
+        public void Reset()
+        {
+            _clearSetCount.Value = 0;
+        }
     }
 }

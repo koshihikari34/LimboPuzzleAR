@@ -23,6 +23,7 @@ namespace LimboPuzzleAR.Main.ViewModels
         private readonly IStonePlacementService _stonePlacementService;
         private readonly ReactiveProperty<Vector3> _holdPosition = new();
         private readonly ReactiveProperty<bool> _hasReachedClearHeight = new(false);
+        private readonly Subject<Unit> _retryRequested = new();
 
         public StoneViewModel(
             StoneModel stoneModel,
@@ -59,6 +60,8 @@ namespace LimboPuzzleAR.Main.ViewModels
         public ReadOnlyReactiveProperty<int> ClearSetCount => _scoreModel.ClearSetCount;
 
         public ReadOnlyReactiveProperty<Vector3> HoldPosition => _holdPosition;
+
+        public Observable<Unit> RetryRequested => _retryRequested;
 
         public bool TryBeginHold(Vector2 screenPosition)
         {
@@ -178,6 +181,16 @@ namespace LimboPuzzleAR.Main.ViewModels
         public void StopInteraction()
         {
             _stoneModel.StopInteraction();
+        }
+
+        public void ResetForRetry()
+        {
+            // リトライでは同じ設置場所を使い、積み石とスコアだけを新しいゲームとして初期化する。
+            _stoneModel.ResetInteraction();
+            _stoneStackModel.Reset();
+            _scoreModel.Reset();
+            _hasReachedClearHeight.Value = false;
+            _retryRequested.OnNext(Unit.Default);
         }
 
         public void RegisterStableStoneTop(float topY)
