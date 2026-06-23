@@ -1,4 +1,5 @@
 using LimboPuzzleAR.Common.Services;
+using LimboPuzzleAR.Main.Models;
 using LimboPuzzleAR.Main.ViewModels;
 using R3;
 using UnityEngine;
@@ -17,21 +18,28 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField] private Text scoreText;
         [SerializeField] private Text highScoreText;
         [SerializeField] private Text newRecordText;
+        [SerializeField] private Button retryButton;
         [SerializeField] private Button titleButton;
         [SerializeField] private string titleSceneName = "Title";
 
         private StoneViewModel _stoneViewModel;
         private TimeViewModel _timeViewModel;
+        private OniViewModel _oniViewModel;
+        private GameStartViewModel _gameStartViewModel;
         private IScoreRepository _scoreRepository;
 
         [Inject]
         public void Construct(
             StoneViewModel stoneViewModel,
             TimeViewModel timeViewModel,
+            OniViewModel oniViewModel,
+            GameStartViewModel gameStartViewModel,
             IScoreRepository scoreRepository)
         {
             _stoneViewModel = stoneViewModel;
             _timeViewModel = timeViewModel;
+            _oniViewModel = oniViewModel;
+            _gameStartViewModel = gameStartViewModel;
             _scoreRepository = scoreRepository;
         }
 
@@ -48,6 +56,11 @@ namespace LimboPuzzleAR.Main.Views
             {
                 titleButton.onClick.AddListener(LoadTitleScene);
             }
+
+            if (retryButton != null)
+            {
+                retryButton.onClick.AddListener(RetryGame);
+            }
         }
 
         private void OnDestroy()
@@ -55,6 +68,11 @@ namespace LimboPuzzleAR.Main.Views
             if (titleButton != null)
             {
                 titleButton.onClick.RemoveListener(LoadTitleScene);
+            }
+
+            if (retryButton != null)
+            {
+                retryButton.onClick.RemoveListener(RetryGame);
             }
         }
 
@@ -100,6 +118,15 @@ namespace LimboPuzzleAR.Main.Views
         private void LoadTitleScene()
         {
             SceneManager.LoadScene(titleSceneName);
+        }
+
+        private void RetryGame()
+        {
+            SetResultVisible(false);
+            _stoneViewModel.ResetForRetry();
+            _timeViewModel.Reset();
+            _oniViewModel.SetState(OniState.Safe);
+            _gameStartViewModel.ResetAndStartCountdown();
         }
     }
 }

@@ -60,6 +60,15 @@ namespace LimboPuzzleAR.Main.Models
             ApplyCountdownLabel();
         }
 
+        public void ResetAndStartCountdown()
+        {
+            _isPlaying.Value = false;
+            _isCountdownVisible.Value = false;
+            _countdownLabel.Value = string.Empty;
+            _hasStartedCountdown = false;
+            StartCountdown();
+        }
+
         private void ApplyCountdownLabel()
         {
             if (_remainingCountdownSeconds <= _startLabelSeconds)

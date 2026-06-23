@@ -23,5 +23,10 @@ namespace LimboPuzzleAR.Main.ViewModels
         {
             _timeModel.Tick(deltaSeconds);
         }
+
+        public void Reset()
+        {
+            _timeModel.Reset();
+        }
     }
 }

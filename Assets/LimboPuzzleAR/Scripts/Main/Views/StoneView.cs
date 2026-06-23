@@ -51,6 +51,10 @@ namespace LimboPuzzleAR.Main.Views
                 .Subscribe(_ => ClearHoldingStone())
                 .AddTo(this);
 
+            _viewModel.RetryRequested
+                .Subscribe(_ => ClearAllStonesForRetry())
+                .AddTo(this);
+
             _oniViewModel.CurrentState
                 .Where(state => state == OniState.Attack)
                 .Subscribe(_ => ClearAllStonesForAttack())
@@ -153,6 +157,28 @@ namespace LimboPuzzleAR.Main.Views
             }
 
             ClearReleasedStones();
+        }
+
+        private void ClearAllStonesForRetry()
+        {
+            // リトライ時は演出を挟まず、残っている石をすべて片付けて同じ設置場所から再開する。
+            if (_currentStone != null)
+            {
+                Destroy(_currentStone.gameObject);
+                _currentStone = null;
+            }
+
+            foreach (var releasedStone in _releasedStones)
+            {
+                if (releasedStone == null)
+                {
+                    continue;
+                }
+
+                Destroy(releasedStone.gameObject);
+            }
+
+            _releasedStones.Clear();
         }
     }
 }

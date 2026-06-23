@@ -7,11 +7,13 @@ namespace LimboPuzzleAR.Main.Models
     /// </summary>
     public sealed class TimeModel
     {
+        private readonly float _initialSeconds;
         private readonly ReactiveProperty<float> _remainingSeconds;
         private readonly ReactiveProperty<bool> _isTimeUp;
 
         public TimeModel(float initialSeconds)
         {
+            _initialSeconds = initialSeconds;
             _remainingSeconds = new ReactiveProperty<float>(initialSeconds);
             _isTimeUp = new ReactiveProperty<bool>(initialSeconds <= 0f);
         }
@@ -33,6 +35,12 @@ namespace LimboPuzzleAR.Main.Models
             {
                 _isTimeUp.Value = true;
             }
+        }
+
+        public void Reset()
+        {
+            _remainingSeconds.Value = _initialSeconds;
+            _isTimeUp.Value = _initialSeconds <= 0f;
         }
     }
 }
