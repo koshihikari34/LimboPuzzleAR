@@ -35,5 +35,10 @@ namespace LimboPuzzleAR.Main.ViewModels
         {
             _stateMachine.RecoverFromAttack();
         }
+
+        public void ResetToIdle()
+        {
+            _stateMachine.ResetToIdle();
+        }
     }
 }

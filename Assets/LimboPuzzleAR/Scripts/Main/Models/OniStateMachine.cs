@@ -21,6 +21,7 @@ namespace LimboPuzzleAR.Main.Models
         {
             var nextState = _oniModel.CurrentState.CurrentValue switch
             {
+                OniState.Idle => OniState.Safe,
                 OniState.Safe => OniState.Warning,
                 OniState.Warning => OniState.Watching,
                 OniState.Watching => OniState.Safe,
@@ -39,6 +40,11 @@ namespace LimboPuzzleAR.Main.Models
             }
 
             _oniModel.SetState(OniState.Safe);
+        }
+
+        public void ResetToIdle()
+        {
+            _oniModel.ResetToIdle();
         }
     }
 }

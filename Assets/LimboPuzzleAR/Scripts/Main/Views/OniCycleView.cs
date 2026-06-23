@@ -47,8 +47,19 @@ namespace LimboPuzzleAR.Main.Views
 
             _gameStartViewModel.IsPlaying
                 .Where(isPlaying => isPlaying)
-                .Subscribe(_ => RestartCycle())
+                .Subscribe(_ => StartSafeCycle())
                 .AddTo(this);
+        }
+
+        private void StartSafeCycle()
+        {
+            if (_oniViewModel.CurrentState.CurrentValue == OniState.Idle)
+            {
+                _oniViewModel.SetState(OniState.Safe);
+                return;
+            }
+
+            RestartCycle();
         }
 
         private void RestartCycle()

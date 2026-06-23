@@ -7,7 +7,7 @@ namespace LimboPuzzleAR.Main.Models
     /// </summary>
     public sealed class OniModel
     {
-        private readonly ReactiveProperty<OniState> _currentState = new(OniState.Safe);
+        private readonly ReactiveProperty<OniState> _currentState = new(OniState.Idle);
 
         public ReadOnlyReactiveProperty<OniState> CurrentState => _currentState;
 
@@ -19,6 +19,11 @@ namespace LimboPuzzleAR.Main.Models
             }
 
             _currentState.Value = state;
+        }
+
+        public void ResetToIdle()
+        {
+            _currentState.Value = OniState.Idle;
         }
     }
 }
