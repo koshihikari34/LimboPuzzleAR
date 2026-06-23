@@ -1,0 +1,113 @@
+using System.Collections;
+using LimboPuzzleAR.Main.Models;
+using LimboPuzzleAR.Main.ViewModels;
+using R3;
+using UnityEngine;
+using VContainer;
+
+namespace LimboPuzzleAR.Main.Views
+{
+    /// <summary>
+    /// 鬼ステートを時間経過で進める。
+    /// </summary>
+    public sealed class OniCycleView : MonoBehaviour
+    {
+        [SerializeField] private bool autoCycle = true;
+        [SerializeField, Min(0.1f)] private float safeSeconds = 3f;
+        [SerializeField, Min(0.1f)] private float warningSeconds = 1f;
+        [SerializeField, Min(0.1f)] private float watchingSeconds = 2f;
+        [SerializeField, Min(0.1f)] private float attackSeconds = 2f;
+
+        private OniViewModel _oniViewModel;
+        private TimeViewModel _timeViewModel;
+        private Coroutine _cycleCoroutine;
+
+        [Inject]
+        public void Construct(
+            OniViewModel oniViewModel,
+            TimeViewModel timeViewModel)
+        {
+            _oniViewModel = oniViewModel;
+            _timeViewModel = timeViewModel;
+        }
+
+        private void Start()
+        {
+            _oniViewModel.CurrentState
+                .Subscribe(_ => RestartCycle())
+                .AddTo(this);
+
+            _timeViewModel.IsTimeUp
+                .Where(isTimeUp => isTimeUp)
+                .Subscribe(_ => StopCycle())
+                .AddTo(this);
+
+            if (autoCycle)
+            {
+                RestartCycle();
+            }
+        }
+
+        private void RestartCycle()
+        {
+            if (!autoCycle || _timeViewModel.IsTimeUp.CurrentValue)
+            {
+                return;
+            }
+
+            if (_cycleCoroutine != null)
+            {
+                StopCoroutine(_cycleCoroutine);
+            }
+
+            _cycleCoroutine = StartCoroutine(WaitAndAdvance());
+        }
+
+        private void StopCycle()
+        {
+            if (_cycleCoroutine == null)
+            {
+                return;
+            }
+
+            StopCoroutine(_cycleCoroutine);
+            _cycleCoroutine = null;
+        }
+
+        private IEnumerator WaitAndAdvance()
+        {
+            var state = _oniViewModel.CurrentState.CurrentValue;
+            yield return new WaitForSeconds(GetDurationSeconds(state));
+
+            if (_timeViewModel.IsTimeUp.CurrentValue)
+            {
+                _cycleCoroutine = null;
+                yield break;
+            }
+
+            if (state == OniState.Attack)
+            {
+                _oniViewModel.ReturnToSafe();
+            }
+            else
+            {
+                // 状態の順序はOniStateMachineへ寄せ、Viewは時間到達だけを通知する。
+                _oniViewModel.AdvanceCycle();
+            }
+
+            _cycleCoroutine = null;
+        }
+
+        private float GetDurationSeconds(OniState state)
+        {
+            return state switch
+            {
+                OniState.Safe => safeSeconds,
+                OniState.Warning => warningSeconds,
+                OniState.Watching => watchingSeconds,
+                OniState.Attack => attackSeconds,
+                _ => safeSeconds
+            };
+        }
+    }
+}
