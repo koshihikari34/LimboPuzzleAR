@@ -12,7 +12,7 @@ namespace LimboPuzzleAR.Main.Views
     {
         [SerializeField] private StoneView stoneView;
         [SerializeField] private Transform placementRoot;
-        [SerializeField] private float stableDurationSeconds = 1f;
+        [SerializeField] private float stableDurationSeconds = 0.5f;
         [SerializeField] private float stableVelocityThreshold = 0.02f;
         [SerializeField] private float stableAngularVelocityThresholdDegrees = 2f;
         [SerializeField] private float fallDistanceFromPlacement = 0.5f;

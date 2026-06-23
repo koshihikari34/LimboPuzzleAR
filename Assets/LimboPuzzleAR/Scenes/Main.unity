@@ -244,7 +244,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.StonePhysicsView
   stoneView: {fileID: 537103179}
   placementRoot: {fileID: 1435903736}
-  stableDurationSeconds: 1
+  stableDurationSeconds: 0.5
   stableVelocityThreshold: 0.02
   stableAngularVelocityThresholdDegrees: 2
   fallDistanceFromPlacement: 0.35
