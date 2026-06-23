@@ -1,6 +1,7 @@
 using LimboPuzzleAR.Main.ViewModels;
 using R3;
 using UnityEngine;
+using UnityEngine.XR.ARFoundation;
 using VContainer;
 
 namespace LimboPuzzleAR.Main.Views
@@ -11,6 +12,7 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class ARPlacementView : MonoBehaviour
     {
         [SerializeField] private GameObject placementRoot;
+        [SerializeField] private ARPlaneManager planeManager;
 
         private PlacementViewModel _viewModel;
 
@@ -38,6 +40,23 @@ namespace LimboPuzzleAR.Main.Views
         {
             placementRoot.transform.SetPositionAndRotation(pose.position, pose.rotation);
             placementRoot.SetActive(true);
+            HideDetectedPlanes();
+        }
+
+        private void HideDetectedPlanes()
+        {
+            if (planeManager == null)
+            {
+                return;
+            }
+
+            // 仕様: プレイエリア確定後はAR平面表示を消し、石積みに集中できる状態へ移行する。
+            foreach (var plane in planeManager.trackables)
+            {
+                plane.gameObject.SetActive(false);
+            }
+
+            planeManager.enabled = false;
         }
     }
 }

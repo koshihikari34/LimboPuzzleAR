@@ -958,6 +958,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.ARPlacementView
   placementRoot: {fileID: 1435903735}
+  planeManager: {fileID: 1453228944}
 --- !u!4 &872771697
 Transform:
   m_ObjectHideFlags: 0
