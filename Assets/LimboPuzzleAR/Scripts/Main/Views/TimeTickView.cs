@@ -10,15 +10,24 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class TimeTickView : MonoBehaviour
     {
         private TimeViewModel _timeViewModel;
+        private GameStartViewModel _gameStartViewModel;
 
         [Inject]
-        public void Construct(TimeViewModel timeViewModel)
+        public void Construct(
+            TimeViewModel timeViewModel,
+            GameStartViewModel gameStartViewModel)
         {
             _timeViewModel = timeViewModel;
+            _gameStartViewModel = gameStartViewModel;
         }
 
         private void Update()
         {
+            if (!_gameStartViewModel.IsPlaying.CurrentValue)
+            {
+                return;
+            }
+
             _timeViewModel.Tick(Time.deltaTime);
         }
     }

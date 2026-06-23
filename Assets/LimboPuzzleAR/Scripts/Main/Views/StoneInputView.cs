@@ -16,16 +16,19 @@ namespace LimboPuzzleAR.Main.Views
 
         private StoneViewModel _viewModel;
         private PlacementViewModel _placementViewModel;
+        private GameStartViewModel _gameStartViewModel;
         private bool _isDragging;
         private int _placementCompletedFrame = -1;
 
         [Inject]
         public void Construct(
             StoneViewModel viewModel,
-            PlacementViewModel placementViewModel)
+            PlacementViewModel placementViewModel,
+            GameStartViewModel gameStartViewModel)
         {
             _viewModel = viewModel;
             _placementViewModel = placementViewModel;
+            _gameStartViewModel = gameStartViewModel;
         }
 
         private void Start()
@@ -37,6 +40,10 @@ namespace LimboPuzzleAR.Main.Views
 
             _viewModel.CanSpawnStone
                 .Subscribe(ApplyNextStoneButton)
+                .AddTo(this);
+
+            _gameStartViewModel.IsPlaying
+                .Subscribe(_ => ApplyNextStoneButton(_viewModel.CanSpawnStone.CurrentValue))
                 .AddTo(this);
         }
 
@@ -99,7 +106,7 @@ namespace LimboPuzzleAR.Main.Views
                 return;
             }
 
-            nextStoneButton.interactable = canSpawnStone;
+            nextStoneButton.interactable = canSpawnStone && _gameStartViewModel.IsPlaying.CurrentValue;
         }
 
         private static bool TryGetPointerDownPosition(out Vector2 screenPosition)
