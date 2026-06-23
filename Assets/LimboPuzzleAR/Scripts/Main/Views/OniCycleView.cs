@@ -17,21 +17,28 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField, Min(0.1f)] private float warningSeconds = 1f;
         [SerializeField, Min(0.1f)] private float watchingSeconds = 2f;
         [SerializeField, Min(0.1f)] private float attackSeconds = 2f;
+        [SerializeField, Min(0f)] private float safeReductionPerClearSeconds = 0.2f;
+        [SerializeField, Min(0.1f)] private float minimumSafeSeconds = 1.8f;
+        [SerializeField, Min(0f)] private float watchingIncreasePerClearSeconds = 0.1f;
+        [SerializeField, Min(0.1f)] private float maximumWatchingSeconds = 3f;
 
         private OniViewModel _oniViewModel;
         private TimeViewModel _timeViewModel;
         private GameStartViewModel _gameStartViewModel;
+        private ScoreModel _scoreModel;
         private Coroutine _cycleCoroutine;
 
         [Inject]
         public void Construct(
             OniViewModel oniViewModel,
             TimeViewModel timeViewModel,
-            GameStartViewModel gameStartViewModel)
+            GameStartViewModel gameStartViewModel,
+            ScoreModel scoreModel)
         {
             _oniViewModel = oniViewModel;
             _timeViewModel = timeViewModel;
             _gameStartViewModel = gameStartViewModel;
+            _scoreModel = scoreModel;
         }
 
         private void Start()
@@ -118,12 +125,26 @@ namespace LimboPuzzleAR.Main.Views
         {
             return state switch
             {
-                OniState.Safe => safeSeconds,
+                OniState.Safe => GetScaledSafeSeconds(),
                 OniState.Warning => warningSeconds,
-                OniState.Watching => watchingSeconds,
+                OniState.Watching => GetScaledWatchingSeconds(),
                 OniState.Attack => attackSeconds,
                 _ => safeSeconds
             };
+        }
+
+        private float GetScaledSafeSeconds()
+        {
+            // クリア数に応じて安全時間を短くし、後半ほど鬼が早く振り返る。
+            var scaledSeconds = safeSeconds - _scoreModel.ClearSetCount.CurrentValue * safeReductionPerClearSeconds;
+            return Mathf.Max(minimumSafeSeconds, scaledSeconds);
+        }
+
+        private float GetScaledWatchingSeconds()
+        {
+            // クリア数に応じて監視時間を伸ばし、Releaseできない時間を少しずつ増やす。
+            var scaledSeconds = watchingSeconds + _scoreModel.ClearSetCount.CurrentValue * watchingIncreasePerClearSeconds;
+            return Mathf.Min(maximumWatchingSeconds, scaledSeconds);
         }
     }
 }

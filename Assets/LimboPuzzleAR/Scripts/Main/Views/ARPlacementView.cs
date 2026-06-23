@@ -12,6 +12,7 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class ARPlacementView : MonoBehaviour
     {
         [SerializeField] private GameObject placementRoot;
+        [SerializeField] private Transform heightGuide;
         [SerializeField] private ARPlaneManager planeManager;
 
         private PlacementViewModel _viewModel;
@@ -34,6 +35,10 @@ namespace LimboPuzzleAR.Main.Views
                 .Where(isPlaced => isPlaced)
                 .Subscribe(_ => ApplyPlacement(_viewModel.PlacementPose.CurrentValue))
                 .AddTo(this);
+
+            _viewModel.ClearHeightMeters
+                .Subscribe(ApplyGuideHeight)
+                .AddTo(this);
         }
 
         private void ApplyPlacement(Pose pose)
@@ -41,6 +46,18 @@ namespace LimboPuzzleAR.Main.Views
             placementRoot.transform.SetPositionAndRotation(pose.position, pose.rotation);
             placementRoot.SetActive(true);
             HideDetectedPlanes();
+        }
+
+        private void ApplyGuideHeight(float clearHeightMeters)
+        {
+            if (heightGuide == null)
+            {
+                return;
+            }
+
+            var localPosition = heightGuide.localPosition;
+            localPosition.y = clearHeightMeters;
+            heightGuide.localPosition = localPosition;
         }
 
         private void HideDetectedPlanes()

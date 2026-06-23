@@ -1,4 +1,5 @@
 using LimboPuzzleAR.Main.ViewModels;
+using LimboPuzzleAR.Main.Models;
 using R3;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -17,6 +18,7 @@ namespace LimboPuzzleAR.Main.Views
         private StoneViewModel _viewModel;
         private PlacementViewModel _placementViewModel;
         private GameStartViewModel _gameStartViewModel;
+        private OniViewModel _oniViewModel;
         private bool _isDragging;
         private int _placementCompletedFrame = -1;
 
@@ -24,11 +26,13 @@ namespace LimboPuzzleAR.Main.Views
         public void Construct(
             StoneViewModel viewModel,
             PlacementViewModel placementViewModel,
-            GameStartViewModel gameStartViewModel)
+            GameStartViewModel gameStartViewModel,
+            OniViewModel oniViewModel)
         {
             _viewModel = viewModel;
             _placementViewModel = placementViewModel;
             _gameStartViewModel = gameStartViewModel;
+            _oniViewModel = oniViewModel;
         }
 
         private void Start()
@@ -43,6 +47,10 @@ namespace LimboPuzzleAR.Main.Views
                 .AddTo(this);
 
             _gameStartViewModel.IsPlaying
+                .Subscribe(_ => ApplyNextStoneButton(_viewModel.CanSpawnStone.CurrentValue))
+                .AddTo(this);
+
+            _oniViewModel.CurrentState
                 .Subscribe(_ => ApplyNextStoneButton(_viewModel.CanSpawnStone.CurrentValue))
                 .AddTo(this);
         }
@@ -106,7 +114,9 @@ namespace LimboPuzzleAR.Main.Views
                 return;
             }
 
-            nextStoneButton.interactable = canSpawnStone && _gameStartViewModel.IsPlaying.CurrentValue;
+            nextStoneButton.interactable = canSpawnStone
+                && _gameStartViewModel.IsPlaying.CurrentValue
+                && _oniViewModel.CurrentState.CurrentValue != OniState.Attack;
         }
 
         private static bool TryGetPointerDownPosition(out Vector2 screenPosition)

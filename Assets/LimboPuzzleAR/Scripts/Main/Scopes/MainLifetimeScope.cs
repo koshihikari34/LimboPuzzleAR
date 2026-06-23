@@ -17,8 +17,12 @@ namespace LimboPuzzleAR.Main.Scopes
     {
         [SerializeField] private Camera mainCamera;
         [SerializeField] private ARRaycastManager raycastManager;
-        [SerializeField, Tooltip("PlacementRootからクリアガイドまでの高さ。Scene上のHeightGuideと同じ値にする。")]
-        private float clearHeightMeters = 0.3f;
+        [SerializeField, Tooltip("最初のセットで使うクリアガイド高さ。")]
+        private float initialClearHeightMeters = 0.14f;
+        [SerializeField, Tooltip("1セットクリアごとに上げるクリアガイド高さ。")]
+        private float clearHeightStepMeters = 0.02f;
+        [SerializeField, Tooltip("クリアガイド高さの上限。")]
+        private float maxClearHeightMeters = 0.2f;
         [SerializeField, Tooltip("AR設置点から積み場中心までの相対位置。左に鬼、右に積み場の構図調整に使う。")]
         private Vector3 stackCenterOffsetMeters = Vector3.zero;
         [SerializeField, Min(1f)] private float gameDurationSeconds = 60f;
@@ -48,7 +52,13 @@ namespace LimboPuzzleAR.Main.Scopes
                 builder.Register<IARPlacementService, ARPlacementService>(Lifetime.Scoped);
             }
 
-            builder.Register(_ => new PlacementModel(clearHeightMeters, stackCenterOffsetMeters), Lifetime.Scoped);
+            builder.Register(
+                _ => new PlacementModel(
+                    initialClearHeightMeters,
+                    clearHeightStepMeters,
+                    maxClearHeightMeters,
+                    stackCenterOffsetMeters),
+                Lifetime.Scoped);
             builder.Register<PlacementViewModel>(Lifetime.Scoped);
             builder.Register<StoneModel>(Lifetime.Scoped);
             builder.Register<StoneStackModel>(Lifetime.Scoped);

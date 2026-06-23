@@ -44,7 +44,7 @@ namespace LimboPuzzleAR.Main.Views
 
             _viewModel.HasReachedClearHeight
                 .Where(hasReachedClearHeight => hasReachedClearHeight)
-                .Subscribe(_ => ClearReleasedStones())
+                .Subscribe(_ => ClearReleasedStonesForClear())
                 .AddTo(this);
 
             _viewModel.IsTimeUp
@@ -125,19 +125,9 @@ namespace LimboPuzzleAR.Main.Views
             _releasedStone.OnNext(releasedStone);
         }
 
-        private void ClearReleasedStones()
+        private void ClearReleasedStonesForClear()
         {
-            foreach (var releasedStone in _releasedStones)
-            {
-                if (releasedStone == null)
-                {
-                    continue;
-                }
-
-                Destroy(releasedStone.gameObject);
-            }
-
-            _releasedStones.Clear();
+            ClearReleasedStoneObjects();
             _viewModel.PrepareNextClearSet();
         }
 
@@ -174,7 +164,8 @@ namespace LimboPuzzleAR.Main.Views
                 _currentStone = null;
             }
 
-            ClearReleasedStones();
+            ClearReleasedStoneObjects();
+            _viewModel.ResetAfterAttack();
         }
 
         private void ClearAllStonesForRetry()
@@ -186,6 +177,21 @@ namespace LimboPuzzleAR.Main.Views
                 _currentStone = null;
             }
 
+            foreach (var releasedStone in _releasedStones)
+            {
+                if (releasedStone == null)
+                {
+                    continue;
+                }
+
+                Destroy(releasedStone.gameObject);
+            }
+
+            _releasedStones.Clear();
+        }
+
+        private void ClearReleasedStoneObjects()
+        {
             foreach (var releasedStone in _releasedStones)
             {
                 if (releasedStone == null)

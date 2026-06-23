@@ -172,7 +172,16 @@ namespace LimboPuzzleAR.Main.ViewModels
 
         public void PrepareNextClearSet()
         {
-            // クリアやAttack後は、次の石積みを新しい高さ判定として扱い、石操作も再開可能にする。
+            // クリア後は、次の石積みを新しい高さ判定として扱い、少し高いガイドへ進める。
+            _stoneModel.ResetInteraction();
+            _stoneStackModel.Reset();
+            _placementModel.AdvanceClearHeight();
+            _hasReachedClearHeight.Value = false;
+        }
+
+        public void ResetAfterAttack()
+        {
+            // Attackは失敗扱いなので、ガイド高さは上げずに同じセットをやり直す。
             _stoneModel.ResetInteraction();
             _stoneStackModel.Reset();
             _hasReachedClearHeight.Value = false;
@@ -189,6 +198,7 @@ namespace LimboPuzzleAR.Main.ViewModels
             _stoneModel.ResetInteraction();
             _stoneStackModel.Reset();
             _scoreModel.Reset();
+            _placementModel.ResetClearHeight();
             _hasReachedClearHeight.Value = false;
             _retryRequested.OnNext(Unit.Default);
         }
