@@ -77,7 +77,7 @@ namespace LimboPuzzleAR.Main.ViewModels
 
             if (!_stonePlacementService.TryGetHoldPosition(
                     screenPosition,
-                    _placementModel.PlacementPose.CurrentValue,
+                    _placementModel.StackPose.CurrentValue,
                     GetMinimumHoldY(),
                     out var position))
             {
@@ -112,7 +112,7 @@ namespace LimboPuzzleAR.Main.ViewModels
 
             if (!_stonePlacementService.TryGetHoldPosition(
                     screenPosition,
-                    _placementModel.PlacementPose.CurrentValue,
+                    _placementModel.StackPose.CurrentValue,
                     GetMinimumHoldY(),
                     out var position))
             {
@@ -181,7 +181,7 @@ namespace LimboPuzzleAR.Main.ViewModels
 
         private float GetMinimumHoldY()
         {
-            var baseMinimumY = _placementModel.PlacementPose.CurrentValue.position.y + BaseHoldHeightOffset;
+            var baseMinimumY = _placementModel.StackPose.CurrentValue.position.y + BaseHoldHeightOffset;
             var stackMinimumY = _stoneStackModel.HighestTopY.CurrentValue + StableStoneHoldMargin;
             return Mathf.Max(baseMinimumY, stackMinimumY);
         }

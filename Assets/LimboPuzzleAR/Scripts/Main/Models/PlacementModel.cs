@@ -9,16 +9,21 @@ namespace LimboPuzzleAR.Main.Models
     public sealed class PlacementModel
     {
         private readonly float _clearHeightMeters;
+        private readonly Vector3 _stackCenterOffsetMeters;
         private readonly ReactiveProperty<Pose> _placementPose = new();
+        private readonly ReactiveProperty<Pose> _stackPose = new();
         private readonly ReactiveProperty<bool> _isPlaced = new(false);
         private readonly ReactiveProperty<float> _clearHeightY = new();
 
-        public PlacementModel(float clearHeightMeters)
+        public PlacementModel(float clearHeightMeters, Vector3 stackCenterOffsetMeters)
         {
             _clearHeightMeters = clearHeightMeters;
+            _stackCenterOffsetMeters = stackCenterOffsetMeters;
         }
 
         public ReadOnlyReactiveProperty<Pose> PlacementPose => _placementPose;
+
+        public ReadOnlyReactiveProperty<Pose> StackPose => _stackPose;
 
         public ReadOnlyReactiveProperty<bool> IsPlaced => _isPlaced;
 
@@ -33,7 +38,10 @@ namespace LimboPuzzleAR.Main.Models
             }
 
             _placementPose.Value = pose;
-            _clearHeightY.Value = pose.position.y + _clearHeightMeters;
+            // 積み場はAR設置点からの相対位置として持ち、鬼や背景を増やしても石の基準が土台とズレないようにする。
+            var stackPosition = pose.position + pose.rotation * _stackCenterOffsetMeters;
+            _stackPose.Value = new Pose(stackPosition, pose.rotation);
+            _clearHeightY.Value = stackPosition.y + _clearHeightMeters;
             _isPlaced.Value = true;
             return true;
         }
