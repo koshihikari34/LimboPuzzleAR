@@ -320,7 +320,7 @@ Transform:
   m_GameObject: {fileID: 493876407}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.2, z: 0}
+  m_LocalPosition: {x: 0, y: 0.14, z: 0}
   m_LocalScale: {x: 0.23, y: 0.005, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -759,7 +759,9 @@ MonoBehaviour:
   - {fileID: 2100000031}
   mainCamera: {fileID: 1410822790}
   raycastManager: {fileID: 1453228943}
-  clearHeightMeters: 0.2
+  initialClearHeightMeters: 0.14
+  clearHeightStepMeters: 0.02
+  maxClearHeightMeters: 0.2
   stackCenterOffsetMeters: {x: 0.12, y: 0, z: 0}
   gameDurationSeconds: 20
   startCountdownSeconds: 3
@@ -966,6 +968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.ARPlacementView
   placementRoot: {fileID: 1435903735}
+  heightGuide: {fileID: 493876408}
   planeManager: {fileID: 1453228944}
 --- !u!4 &872771697
 Transform:

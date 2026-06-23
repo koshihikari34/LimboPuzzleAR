@@ -27,6 +27,8 @@ namespace LimboPuzzleAR.Main.ViewModels
 
         public ReadOnlyReactiveProperty<float> ClearHeightY => _model.ClearHeightY;
 
+        public ReadOnlyReactiveProperty<float> ClearHeightMeters => _model.ClearHeightMeters;
+
         public bool TryPlace(Vector2 screenPosition)
         {
             if (!_placementService.TryGetPlacementPose(screenPosition, out var pose))
