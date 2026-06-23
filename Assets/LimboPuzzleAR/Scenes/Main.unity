@@ -428,6 +428,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.StoneView
   stonePrefab: {fileID: -1822339425813632269, guid: 948a47b7ae1194e9fbf9d047abdd0617, type: 3}
+  stonePrefabs:
+  - {fileID: -1822339425813632269, guid: 948a47b7ae1194e9fbf9d047abdd0617, type: 3}
+  - {fileID: -1822339425813632269, guid: 9bfef27cfd07468c9dfdcfdb140b5fb4, type: 3}
+  - {fileID: -1822339425813632269, guid: 06dfdc5006ec436087988dfd3f3783b0, type: 3}
+  - {fileID: -1822339425813632269, guid: d2e1c2df08554e8b8e5c1950dbe65ce8, type: 3}
 --- !u!1 &548692491
 GameObject:
   m_ObjectHideFlags: 0

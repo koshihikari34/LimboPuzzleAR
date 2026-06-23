@@ -13,6 +13,7 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class StoneView : MonoBehaviour
     {
         [SerializeField] private Rigidbody stonePrefab;
+        [SerializeField] private Rigidbody[] stonePrefabs;
 
         private StoneViewModel _viewModel;
         private OniViewModel _oniViewModel;
@@ -79,8 +80,25 @@ namespace LimboPuzzleAR.Main.Views
                 return;
             }
 
-            _currentStone = Instantiate(stonePrefab);
+            var selectedPrefab = SelectStonePrefab();
+            if (selectedPrefab == null)
+            {
+                return;
+            }
+
+            _currentStone = Instantiate(selectedPrefab);
             _currentStone.isKinematic = true;
+        }
+
+        private Rigidbody SelectStonePrefab()
+        {
+            if (stonePrefabs != null && stonePrefabs.Length > 0)
+            {
+                // 仕様: 石の種類が増えた場合は、掴み始めるたびに候補からランダム供給する。
+                return stonePrefabs[Random.Range(0, stonePrefabs.Length)];
+            }
+
+            return stonePrefab;
         }
 
         private void UpdateHoldingStonePosition(Vector3 position)
