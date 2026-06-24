@@ -2,6 +2,7 @@ using LimboPuzzleAR.Title.ViewModels;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using VContainer;
 
 namespace LimboPuzzleAR.Title.Views
@@ -11,7 +12,7 @@ namespace LimboPuzzleAR.Title.Views
     /// </summary>
     public sealed class TitleUIView : MonoBehaviour
     {
-        [SerializeField] private Text highScoreText;
+        [SerializeField] private TextMeshProUGUI highScoreText;
         [SerializeField] private Button startButton;
 
         private TitleViewModel _viewModel;
