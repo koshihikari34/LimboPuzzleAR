@@ -36,7 +36,7 @@ namespace LimboPuzzleAR.Main.Views
                 return;
             }
 
-            timeText.text = $"Time: {Mathf.CeilToInt(remainingSeconds)}";
+            timeText.text = $"TIME {Mathf.CeilToInt(remainingSeconds)}";
         }
     }
 }

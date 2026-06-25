@@ -3096,9 +3096,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.ResultUIView
   resultRoot: {fileID: 3000000001}
-  scoreText: {fileID: 0}
-  highScoreText: {fileID: 0}
-  newRecordText: {fileID: 0}
+  scoreText: {fileID: 2027663528}
+  highScoreText: {fileID: 1769573351}
+  newRecordText: {fileID: 402464906}
   retryButton: {fileID: 2500000005}
   titleButton: {fileID: 1213002995}
   titleSceneName: Title
