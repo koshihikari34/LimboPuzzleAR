@@ -94,7 +94,7 @@ namespace LimboPuzzleAR.Main.Views
             _currentState = state;
             RefreshTargetRotation();
 
-            if (animator == null)
+            if (animator == null || !animator.isActiveAndEnabled)
             {
                 return;
             }

@@ -14,11 +14,15 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class StoneInputView : MonoBehaviour
     {
         [SerializeField] private Button nextStoneButton;
+        [SerializeField] private Image nextStonePreviewImage;
+        [SerializeField] private StoneView stoneView;
+        [SerializeField] private Color disabledPreviewColor = new(1f, 1f, 1f, 0.35f);
 
         private StoneViewModel _viewModel;
         private PlacementViewModel _placementViewModel;
         private GameStartViewModel _gameStartViewModel;
         private OniViewModel _oniViewModel;
+        private Color _currentNextStonePreviewColor = Color.white;
         private bool _isDragging;
         private int _placementCompletedFrame = -1;
 
@@ -53,6 +57,16 @@ namespace LimboPuzzleAR.Main.Views
             _oniViewModel.CurrentState
                 .Subscribe(_ => ApplyNextStoneButton(_viewModel.CanSpawnStone.CurrentValue))
                 .AddTo(this);
+
+            if (stoneView != null)
+            {
+                _currentNextStonePreviewColor = stoneView.CurrentNextStonePreviewColor;
+                stoneView.NextStonePreviewColorChanged
+                    .Subscribe(ApplyNextStonePreview)
+                    .AddTo(this);
+            }
+
+            ApplyNextStonePreview(_currentNextStonePreviewColor);
         }
 
         private void Update()
@@ -117,6 +131,21 @@ namespace LimboPuzzleAR.Main.Views
             nextStoneButton.interactable = canSpawnStone
                 && _gameStartViewModel.IsPlaying.CurrentValue
                 && _oniViewModel.CurrentState.CurrentValue != OniState.Attack;
+
+            ApplyNextStonePreview(_currentNextStonePreviewColor);
+        }
+
+        private void ApplyNextStonePreview(Color previewColor)
+        {
+            _currentNextStonePreviewColor = previewColor;
+            if (nextStonePreviewImage == null)
+            {
+                return;
+            }
+
+            nextStonePreviewImage.color = nextStoneButton != null && nextStoneButton.interactable
+                ? _currentNextStonePreviewColor
+                : disabledPreviewColor;
         }
 
         private static bool TryGetPointerDownPosition(out Vector2 screenPosition)

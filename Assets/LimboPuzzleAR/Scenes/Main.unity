@@ -832,12 +832,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b1a50dcada84011bbd6abf17cdb39d, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.StoneView
-  stonePrefab: {fileID: -1822339425813632269, guid: 948a47b7ae1194e9fbf9d047abdd0617, type: 3}
+  stonePrefab: {fileID: -1822339425813632269, guid: 7c20300000004c7a9f20300000000001, type: 3}
   stonePrefabs:
-  - {fileID: -1822339425813632269, guid: 948a47b7ae1194e9fbf9d047abdd0617, type: 3}
-  - {fileID: -1822339425813632269, guid: 9bfef27cfd07468c9dfdcfdb140b5fb4, type: 3}
-  - {fileID: -1822339425813632269, guid: 06dfdc5006ec436087988dfd3f3783b0, type: 3}
-  - {fileID: -1822339425813632269, guid: d2e1c2df08554e8b8e5c1950dbe65ce8, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c20300000004c7a9f20300000000001, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c40100000004c7a9f40100000000001, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c60400000004c7a9f60400000000001, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c30400000004c7a9f30400000000001, type: 3}
   attackImpulse: 1.8
   attackUpwardImpulse: 0.8
   attackTorqueImpulse: 0.6
@@ -3415,6 +3415,9 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.StoneInputView
   nextStoneButton: {fileID: 577007460}
+  nextStonePreviewImage: {fileID: 577007461}
+  stoneView: {fileID: 537103179}
+  disabledPreviewColor: {r: 1, g: 1, b: 1, a: 0.35}
 --- !u!1 &2027663526
 GameObject:
   m_ObjectHideFlags: 0

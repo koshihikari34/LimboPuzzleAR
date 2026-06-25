@@ -23,11 +23,18 @@ namespace LimboPuzzleAR.Main.Views
         private StoneViewModel _viewModel;
         private OniViewModel _oniViewModel;
         private readonly Subject<Rigidbody> _releasedStone = new();
+        private readonly Subject<Color> _nextStonePreviewColorChanged = new();
         private readonly List<Rigidbody> _releasedStones = new();
         private Rigidbody _currentStone;
+        private Rigidbody _nextStonePrefab;
+        private Color _nextStonePreviewColor = Color.white;
         private Coroutine _attackCoroutine;
 
         public Observable<Rigidbody> ReleasedStone => _releasedStone;
+
+        public Observable<Color> NextStonePreviewColorChanged => _nextStonePreviewColorChanged;
+
+        public Color CurrentNextStonePreviewColor => _nextStonePreviewColor;
 
         [Inject]
         public void Construct(
@@ -36,6 +43,11 @@ namespace LimboPuzzleAR.Main.Views
         {
             _viewModel = viewModel;
             _oniViewModel = oniViewModel;
+        }
+
+        private void Awake()
+        {
+            SelectNextStone();
         }
 
         private void Start()
@@ -100,11 +112,46 @@ namespace LimboPuzzleAR.Main.Views
         {
             if (stonePrefabs != null && stonePrefabs.Length > 0)
             {
-                // 仕様: 石の種類が増えた場合は、掴み始めるたびに候補からランダム供給する。
-                return stonePrefabs[Random.Range(0, stonePrefabs.Length)];
+                // 仕様: NextStoneボタンに表示していた石を生成し、次候補を先に抽選する。
+                if (_nextStonePrefab == null)
+                {
+                    SelectNextStone();
+                }
+
+                var selectedPrefab = _nextStonePrefab;
+                SelectNextStone();
+                return selectedPrefab;
             }
 
             return stonePrefab;
+        }
+
+        private void SelectNextStone()
+        {
+            if (stonePrefabs == null || stonePrefabs.Length == 0)
+            {
+                _nextStonePrefab = stonePrefab;
+                _nextStonePreviewColor = Color.white;
+                _nextStonePreviewColorChanged.OnNext(_nextStonePreviewColor);
+                return;
+            }
+
+            var stoneIndex = Random.Range(0, stonePrefabs.Length);
+            _nextStonePrefab = stonePrefabs[stoneIndex];
+            _nextStonePreviewColor = GetPreviewColor(stoneIndex);
+            _nextStonePreviewColorChanged.OnNext(_nextStonePreviewColor);
+        }
+
+        private static Color GetPreviewColor(int stoneIndex)
+        {
+            return stoneIndex switch
+            {
+                0 => new Color32(0xE4, 0xE4, 0xE4, 0xFF),
+                1 => new Color32(0x9D, 0xC5, 0xFF, 0xFF),
+                2 => new Color32(0xFF, 0xD2, 0x6E, 0xFF),
+                3 => new Color32(0xB6, 0xEE, 0x9A, 0xFF),
+                _ => Color.white
+            };
         }
 
         private void UpdateHoldingStonePosition(Vector3 position)
