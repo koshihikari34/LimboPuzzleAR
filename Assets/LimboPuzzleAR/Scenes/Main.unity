@@ -846,6 +846,7 @@ MonoBehaviour:
   attackImpulse: 1.8
   attackUpwardImpulse: 0.8
   attackTorqueImpulse: 0.6
+  attackImpulseDelaySeconds: 0.25
   attackClearDelaySeconds: 1.2
 --- !u!1 &548692491
 GameObject:
