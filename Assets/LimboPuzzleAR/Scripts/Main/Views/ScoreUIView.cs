@@ -36,7 +36,7 @@ namespace LimboPuzzleAR.Main.Views
                 return;
             }
 
-            scoreText.text = $"Score: {clearSetCount}";
+            scoreText.text = $"SCORE {clearSetCount}";
         }
     }
 }
