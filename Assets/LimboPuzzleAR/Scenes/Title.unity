@@ -1017,6 +1017,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Title.Views.TitleUIView
   highScoreText: {fileID: 985537523}
   startButton: {fileID: 4718994271582915910}
+  exitButton: {fileID: 8761439764037511262}
 --- !u!4 &1938935277
 Transform:
   m_ObjectHideFlags: 0

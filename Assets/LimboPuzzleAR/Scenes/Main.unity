@@ -3096,7 +3096,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.ResultUIView
   resultRoot: {fileID: 3000000001}
-  scoreText: {fileID: 2027663528}
+  scoreText: {fileID: 452300649}
   highScoreText: {fileID: 1769573351}
   newRecordText: {fileID: 402464906}
   retryButton: {fileID: 2500000005}
@@ -3465,6 +3465,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.OniStateUIView
   stateText: {fileID: 924000200}
+  leftStatusImage: {fileID: 1557904663}
+  statusIconImage: {fileID: 2043920604}
+  idleSprite: {fileID: 21300000, guid: 8c5958c202911441cad8dffdb86bdb88, type: 3}
+  safeSprite: {fileID: 21300000, guid: 0b364e97e2a954e5db922b1d815bd754, type: 3}
+  warningSprite: {fileID: 21300000, guid: 6f8ee77150b1541fdbc371f76d1d6cc4, type: 3}
+  watchingSprite: {fileID: 21300000, guid: d4e219185eb6245c7bc6909e6d7c54db, type: 3}
+  attackSprite: {fileID: 21300000, guid: 21a366c0a63074727a9b4fda9458b23d, type: 3}
 --- !u!1 &2043920602
 GameObject:
   m_ObjectHideFlags: 0

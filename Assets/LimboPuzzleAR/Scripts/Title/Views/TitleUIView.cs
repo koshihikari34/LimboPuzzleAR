@@ -8,12 +8,13 @@ using VContainer;
 namespace LimboPuzzleAR.Title.Views
 {
     /// <summary>
-    /// Title画面のuGUI表示とSTARTボタン入力をViewModelへ接続する。
+    /// Title画面のuGUI表示とボタン入力をViewModelへ接続する。
     /// </summary>
     public sealed class TitleUIView : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI highScoreText;
         [SerializeField] private Button startButton;
+        [SerializeField] private Button exitButton;
 
         private TitleViewModel _viewModel;
 
@@ -33,6 +34,11 @@ namespace LimboPuzzleAR.Title.Views
             {
                 startButton.onClick.AddListener(_viewModel.StartGame);
             }
+
+            if (exitButton != null)
+            {
+                exitButton.onClick.AddListener(_viewModel.ExitGame);
+            }
         }
 
         private void OnDestroy()
@@ -40,6 +46,11 @@ namespace LimboPuzzleAR.Title.Views
             if (startButton != null)
             {
                 startButton.onClick.RemoveListener(_viewModel.StartGame);
+            }
+
+            if (exitButton != null)
+            {
+                exitButton.onClick.RemoveListener(_viewModel.ExitGame);
             }
         }
 
