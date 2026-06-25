@@ -14,7 +14,7 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class StoneInputView : MonoBehaviour
     {
         [SerializeField] private Button nextStoneButton;
-        [SerializeField] private Image nextStonePreviewImage;
+        [SerializeField] private Image nextStoneIconImage;
         [SerializeField] private StoneView stoneView;
         [SerializeField] private Color disabledPreviewColor = new(1f, 1f, 1f, 0.35f);
 
@@ -22,7 +22,7 @@ namespace LimboPuzzleAR.Main.Views
         private PlacementViewModel _placementViewModel;
         private GameStartViewModel _gameStartViewModel;
         private OniViewModel _oniViewModel;
-        private Color _currentNextStonePreviewColor = Color.white;
+        private Sprite _currentNextStonePreviewSprite;
         private bool _isDragging;
         private int _placementCompletedFrame = -1;
 
@@ -60,13 +60,13 @@ namespace LimboPuzzleAR.Main.Views
 
             if (stoneView != null)
             {
-                _currentNextStonePreviewColor = stoneView.CurrentNextStonePreviewColor;
-                stoneView.NextStonePreviewColorChanged
+                _currentNextStonePreviewSprite = stoneView.CurrentNextStonePreviewSprite;
+                stoneView.NextStonePreviewSpriteChanged
                     .Subscribe(ApplyNextStonePreview)
                     .AddTo(this);
             }
 
-            ApplyNextStonePreview(_currentNextStonePreviewColor);
+            ApplyNextStonePreview(_currentNextStonePreviewSprite);
         }
 
         private void Update()
@@ -132,19 +132,21 @@ namespace LimboPuzzleAR.Main.Views
                 && _gameStartViewModel.IsPlaying.CurrentValue
                 && _oniViewModel.CurrentState.CurrentValue != OniState.Attack;
 
-            ApplyNextStonePreview(_currentNextStonePreviewColor);
+            ApplyNextStonePreview(_currentNextStonePreviewSprite);
         }
 
-        private void ApplyNextStonePreview(Color previewColor)
+        private void ApplyNextStonePreview(Sprite previewSprite)
         {
-            _currentNextStonePreviewColor = previewColor;
-            if (nextStonePreviewImage == null)
+            _currentNextStonePreviewSprite = previewSprite;
+            if (nextStoneIconImage == null)
             {
                 return;
             }
 
-            nextStonePreviewImage.color = nextStoneButton != null && nextStoneButton.interactable
-                ? _currentNextStonePreviewColor
+            nextStoneIconImage.sprite = _currentNextStonePreviewSprite;
+            nextStoneIconImage.enabled = _currentNextStonePreviewSprite != null;
+            nextStoneIconImage.color = nextStoneButton != null && nextStoneButton.interactable
+                ? Color.white
                 : disabledPreviewColor;
         }
 

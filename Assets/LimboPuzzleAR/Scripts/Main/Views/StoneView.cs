@@ -15,6 +15,7 @@ namespace LimboPuzzleAR.Main.Views
     {
         [SerializeField] private Rigidbody stonePrefab;
         [SerializeField] private Rigidbody[] stonePrefabs;
+        [SerializeField] private Sprite[] stonePreviewSprites;
         [SerializeField, Min(0f)] private float attackImpulse = 1.8f;
         [SerializeField, Min(0f)] private float attackUpwardImpulse = 0.8f;
         [SerializeField, Min(0f)] private float attackTorqueImpulse = 0.6f;
@@ -23,18 +24,18 @@ namespace LimboPuzzleAR.Main.Views
         private StoneViewModel _viewModel;
         private OniViewModel _oniViewModel;
         private readonly Subject<Rigidbody> _releasedStone = new();
-        private readonly Subject<Color> _nextStonePreviewColorChanged = new();
+        private readonly Subject<Sprite> _nextStonePreviewSpriteChanged = new();
         private readonly List<Rigidbody> _releasedStones = new();
         private Rigidbody _currentStone;
         private Rigidbody _nextStonePrefab;
-        private Color _nextStonePreviewColor = Color.white;
+        private Sprite _nextStonePreviewSprite;
         private Coroutine _attackCoroutine;
 
         public Observable<Rigidbody> ReleasedStone => _releasedStone;
 
-        public Observable<Color> NextStonePreviewColorChanged => _nextStonePreviewColorChanged;
+        public Observable<Sprite> NextStonePreviewSpriteChanged => _nextStonePreviewSpriteChanged;
 
-        public Color CurrentNextStonePreviewColor => _nextStonePreviewColor;
+        public Sprite CurrentNextStonePreviewSprite => _nextStonePreviewSprite;
 
         [Inject]
         public void Construct(
@@ -131,27 +132,27 @@ namespace LimboPuzzleAR.Main.Views
             if (stonePrefabs == null || stonePrefabs.Length == 0)
             {
                 _nextStonePrefab = stonePrefab;
-                _nextStonePreviewColor = Color.white;
-                _nextStonePreviewColorChanged.OnNext(_nextStonePreviewColor);
+                _nextStonePreviewSprite = GetPreviewSprite(0);
+                _nextStonePreviewSpriteChanged.OnNext(_nextStonePreviewSprite);
                 return;
             }
 
             var stoneIndex = Random.Range(0, stonePrefabs.Length);
             _nextStonePrefab = stonePrefabs[stoneIndex];
-            _nextStonePreviewColor = GetPreviewColor(stoneIndex);
-            _nextStonePreviewColorChanged.OnNext(_nextStonePreviewColor);
+            _nextStonePreviewSprite = GetPreviewSprite(stoneIndex);
+            _nextStonePreviewSpriteChanged.OnNext(_nextStonePreviewSprite);
         }
 
-        private static Color GetPreviewColor(int stoneIndex)
+        private Sprite GetPreviewSprite(int stoneIndex)
         {
-            return stoneIndex switch
+            if (stonePreviewSprites == null
+                || stoneIndex < 0
+                || stoneIndex >= stonePreviewSprites.Length)
             {
-                0 => new Color32(0xE4, 0xE4, 0xE4, 0xFF),
-                1 => new Color32(0x9D, 0xC5, 0xFF, 0xFF),
-                2 => new Color32(0xFF, 0xD2, 0x6E, 0xFF),
-                3 => new Color32(0xB6, 0xEE, 0x9A, 0xFF),
-                _ => Color.white
-            };
+                return null;
+            }
+
+            return stonePreviewSprites[stoneIndex];
         }
 
         private void UpdateHoldingStonePosition(Vector3 position)
