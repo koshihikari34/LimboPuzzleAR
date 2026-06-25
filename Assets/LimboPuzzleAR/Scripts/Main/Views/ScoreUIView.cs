@@ -2,6 +2,7 @@ using LimboPuzzleAR.Main.ViewModels;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using VContainer;
 
 namespace LimboPuzzleAR.Main.Views
@@ -11,7 +12,7 @@ namespace LimboPuzzleAR.Main.Views
     /// </summary>
     public sealed class ScoreUIView : MonoBehaviour
     {
-        [SerializeField] private Text scoreText;
+        [SerializeField] private TextMeshProUGUI scoreText;
 
         private StoneViewModel _stoneViewModel;
 

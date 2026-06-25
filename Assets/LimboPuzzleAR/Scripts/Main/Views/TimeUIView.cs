@@ -2,6 +2,7 @@ using LimboPuzzleAR.Main.ViewModels;
 using R3;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using VContainer;
 
 namespace LimboPuzzleAR.Main.Views
@@ -11,7 +12,7 @@ namespace LimboPuzzleAR.Main.Views
     /// </summary>
     public sealed class TimeUIView : MonoBehaviour
     {
-        [SerializeField] private Text timeText;
+        [SerializeField] private TextMeshProUGUI timeText;
 
         private TimeViewModel _timeViewModel;
 

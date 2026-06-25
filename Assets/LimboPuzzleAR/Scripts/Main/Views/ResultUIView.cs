@@ -4,6 +4,7 @@ using R3;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 using VContainer;
 
 namespace LimboPuzzleAR.Main.Views
@@ -14,9 +15,9 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class ResultUIView : MonoBehaviour
     {
         [SerializeField] private GameObject resultRoot;
-        [SerializeField] private Text scoreText;
-        [SerializeField] private Text highScoreText;
-        [SerializeField] private Text newRecordText;
+        [SerializeField] private TextMeshProUGUI scoreText;
+        [SerializeField] private TextMeshProUGUI highScoreText;
+        [SerializeField] private TextMeshProUGUI newRecordText;
         [SerializeField] private Button retryButton;
         [SerializeField] private Button titleButton;
         [SerializeField] private string titleSceneName = "Title";
@@ -88,8 +89,8 @@ namespace LimboPuzzleAR.Main.Views
                 highScore = currentScore;
             }
 
-            ApplyText(scoreText, $"Score: {currentScore}");
-            ApplyText(highScoreText, $"High Score: {highScore}");
+            ApplyText(scoreText, $"Score {currentScore}");
+            ApplyText(highScoreText, $"High Score {highScore}");
             ApplyText(newRecordText, isNewRecord ? "New Record!" : string.Empty);
             SetResultVisible(true);
         }
@@ -104,7 +105,7 @@ namespace LimboPuzzleAR.Main.Views
             resultRoot.SetActive(isVisible);
         }
 
-        private static void ApplyText(Text text, string value)
+        private static void ApplyText(TextMeshProUGUI text, string value)
         {
             if (text == null)
             {
