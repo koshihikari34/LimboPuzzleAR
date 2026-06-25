@@ -119,6 +119,79 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &23144377
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2300000022}
+    m_Modifications:
+    - target: {fileID: 1571042049591659991, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_Name
+      value: Skeleton_110
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5217009034759064855, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
 --- !u!1 &283700086
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,12 +832,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b1a50dcada84011bbd6abf17cdb39d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.StoneView
-  stonePrefab: {fileID: -1822339425813632269, guid: 948a47b7ae1194e9fbf9d047abdd0617, type: 3}
+  stonePrefab: {fileID: -1822339425813632269, guid: 7c20300000004c7a9f20300000000001, type: 3}
   stonePrefabs:
-  - {fileID: -1822339425813632269, guid: 948a47b7ae1194e9fbf9d047abdd0617, type: 3}
-  - {fileID: -1822339425813632269, guid: 9bfef27cfd07468c9dfdcfdb140b5fb4, type: 3}
-  - {fileID: -1822339425813632269, guid: 06dfdc5006ec436087988dfd3f3783b0, type: 3}
-  - {fileID: -1822339425813632269, guid: d2e1c2df08554e8b8e5c1950dbe65ce8, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c20300000004c7a9f20300000000001, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c40100000004c7a9f40100000000001, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c60400000004c7a9f60400000000001, type: 3}
+  - {fileID: -1822339425813632269, guid: 7c30400000004c7a9f30400000000001, type: 3}
+  stonePreviewSprites:
+  - {fileID: 21300000, guid: 358a1eae3ec1c46da8cbd1079c148991, type: 3}
+  - {fileID: 21300000, guid: c1cba57df3bb54f53a52fea4c27f2091, type: 3}
+  - {fileID: 21300000, guid: a3284353daf024a7f838b6ba37249f99, type: 3}
+  - {fileID: 21300000, guid: aabab7f83ffa144debf7f8950e0c7c6b, type: 3}
+  attackImpulse: 1.8
+  attackUpwardImpulse: 0.8
+  attackTorqueImpulse: 0.6
+  attackClearDelaySeconds: 1.2
 --- !u!1 &548692491
 GameObject:
   m_ObjectHideFlags: 0
@@ -922,7 +1004,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1464902905}
   m_Father: {fileID: 2052329282}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
@@ -1619,6 +1702,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 924000198}
   m_CullTransparentMesh: 1
+--- !u!4 &994213389 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2199628841774520173, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+  m_PrefabInstance: {fileID: 23144377}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &994213390 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5217009034759064855, guid: 61b3e3801d56a3f429556c96ea2f07d6, type: 3}
+  m_PrefabInstance: {fileID: 23144377}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1077929635
 GameObject:
   m_ObjectHideFlags: 0
@@ -2650,6 +2743,81 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1464902904
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1464902905}
+  - component: {fileID: 1464902907}
+  - component: {fileID: 1464902906}
+  m_Layer: 5
+  m_Name: StoneIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1464902905
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464902904}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 577007459}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1464902906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464902904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1464902907
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464902904}
+  m_CullTransparentMesh: 1
 --- !u!1 &1557904661
 GameObject:
   m_ObjectHideFlags: 0
@@ -2736,6 +2904,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1621954078}
   - component: {fileID: 1621954080}
+  - component: {fileID: 1621954081}
+  - component: {fileID: 1621954082}
   m_Layer: 0
   m_Name: OniCycleView
   m_TagString: Untagged
@@ -2779,6 +2949,49 @@ MonoBehaviour:
   minimumSafeSeconds: 1.8
   watchingIncreasePerClearSeconds: 0.1
   maximumWatchingSeconds: 3
+--- !u!114 &1621954081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621954077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f2f8c870bf74a84aa403d1ca4b30e0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.OniVisualView
+  visualRoot: {fileID: 994213389}
+  animator: {fileID: 994213390}
+  idleController: {fileID: 9100000, guid: d0635c5725ebf5c49ba6eee6b99dadb6, type: 2}
+  safeController: {fileID: 9100000, guid: d0635c5725ebf5c49ba6eee6b99dadb6, type: 2}
+  warningController: {fileID: 22100000, guid: 7ca9bb784d3bca848a203c3a9d0eaf9f, type: 2}
+  watchingController: {fileID: 9100000, guid: d0635c5725ebf5c49ba6eee6b99dadb6, type: 2}
+  attackController: {fileID: 22100000, guid: e0964a86e58371546a7538cdefa1b62f, type: 2}
+  idleEulerAngles: {x: 0, y: 0, z: 0}
+  safeEulerAngles: {x: 0, y: 0, z: 0}
+  warningEulerAngles: {x: 0, y: -180, z: 0}
+  watchingEulerAngles: {x: 0, y: -180, z: 0}
+  attackEulerAngles: {x: 0, y: -180, z: 0}
+  initialEulerAngles: {x: 0, y: 180, z: 0}
+  rotationDegreesPerSecond: 240
+  warningRotationDegreesPerSecond: 90
+  stopAngleThresholdDegrees: 0.5
+--- !u!114 &1621954082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1621954077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6c9a4e01f6e4b5da3d7a8cf3e88b901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.OniSpawnView
+  animator: {fileID: 994213390}
+  spawnController: {fileID: 22100000, guid: 14a24388f7e985f4688e5e8f06f5f30a, type: 2}
+  spawnSeconds: 1.5
 --- !u!1 &1626793434
 GameObject:
   m_ObjectHideFlags: 0
@@ -3283,6 +3496,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.StoneInputView
   nextStoneButton: {fileID: 577007460}
+  nextStoneIconImage: {fileID: 1464902906}
+  stoneView: {fileID: 537103179}
+  disabledPreviewColor: {r: 1, g: 1, b: 1, a: 0.35}
 --- !u!1 &2027663526
 GameObject:
   m_ObjectHideFlags: 0
@@ -4098,6 +4314,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2300000042}
+  - {fileID: 994213389}
   m_Father: {fileID: 2300000002}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2300000031
@@ -4150,7 +4367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2300000042
 Transform:
   m_ObjectHideFlags: 0
@@ -4240,7 +4457,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2400000002
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4258,7 +4475,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 320, y: 120}
+  m_SizeDelta: {x: 700, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2400000003
 CanvasRenderer:
@@ -4281,7 +4498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.13333334, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4290,11 +4507,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 045fa8b22cd03447b84da7afaf4e4e1e, type: 3}
-    m_FontSize: 72
-    m_FontStyle: 1
+    m_FontSize: 150
+    m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
-    m_MaxSize: 80
+    m_MaxSize: 150
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1

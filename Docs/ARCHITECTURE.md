@@ -49,8 +49,19 @@ ViewModelからViewを直接呼び出す構成にはせず、ViewModelがR3で�
 - ViewModelの状態を購読し、UI、土台、ガイド、石、鬼などの表示を更新する。
 - タッチやボタン操作をViewModelまたは入力Serviceへ渡す。
 - ゲームルールや状態遷移を判断しない。
+- 3Dモデル、Animator、uGUI Image、TextMeshProなどのUnity参照はViewに閉じ込める。
 
 uGUIには自動データバインディングを導入せず、R3による明示的な購読を使用する。
+
+#### 鬼表示
+
+鬼の状態そのものはModel/ViewModelで管理し、見た目はViewで反映する。
+
+- `OniCycleView`: 時間経過で鬼ステートを進める。
+- `OniStateUIView`: 鬼ステートをテキスト、背景色、アイコンへ反映する。
+- `OniVisualView`: 鬼ステートを3Dモデルの向きとAnimator Controllerへ反映する。
+
+`OniVisualView` はゲームルールを持たず、`OniViewModel.CurrentState` を購読して表示だけを切り替える。攻撃時の移動や破壊演出を追加する場合も、判定はModel/ViewModelへ寄せ、TransformやAnimatorの制御はView側で扱う。
 
 ### Service
 
@@ -132,6 +143,8 @@ Assets/LimboPuzzleAR/Tests/
 └── PlayMode/
 ```
 
+アートアセットは原則としてゲーム固有のPrefabや調整済み素材を `Assets/LimboPuzzleAR/` 以下に置く。外部アセットパックを導入する場合は、ライセンスとコミット対象を確認し、必要に応じて元アセットとゲーム用Prefabを分ける。
+
 ## 8. 検証方針
 
 ### Editorで確認する項目
@@ -142,6 +155,8 @@ Assets/LimboPuzzleAR/Tests/
 - Attack中の入力禁止
 - タイマー、スコア、ハイスコア更新
 - Editor用Serviceによる設置フロー
+- TitleのExitボタンによるPlay停止
+- 鬼ステートに応じたUI色、アイコン、3Dモデルの向き、仮アニメーション切り替え
 
 ### 実機で確認するタイミング
 
@@ -149,7 +164,7 @@ Assets/LimboPuzzleAR/Tests/
 
 - 平面検知とタップ位置
 - 土台と実空間のずれ
-- クリア高さ30cmの見え方
+- クリアガイド高さ14cmから20cmの見え方
 
 #### 石操作完成時
 
@@ -222,4 +237,4 @@ StoneView -> StoneViewModel -> StoneModel
 - リリース時は`Rigidbody.isKinematic = false`に戻す。
 - Transform更新とRigidbody操作に限定し、ゲームルールは判断しない。
 
-初期実装ではNextStone UIをまだ作らず、Editor確認しやすいように画面下側の押下から石操作を開始する。操作フローが固まった後、画面下中央のNextStone UIへ置き換える。
+現在はNextStoneボタンから石を取得する方式へ移行済み。ボタン上に次の石サムネイルを表示する対応は、石モデルと石種が固まった後に行う。

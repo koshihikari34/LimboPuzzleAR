@@ -14,11 +14,15 @@ namespace LimboPuzzleAR.Main.Views
     public sealed class StoneInputView : MonoBehaviour
     {
         [SerializeField] private Button nextStoneButton;
+        [SerializeField] private Image nextStoneIconImage;
+        [SerializeField] private StoneView stoneView;
+        [SerializeField] private Color disabledPreviewColor = new(1f, 1f, 1f, 0.35f);
 
         private StoneViewModel _viewModel;
         private PlacementViewModel _placementViewModel;
         private GameStartViewModel _gameStartViewModel;
         private OniViewModel _oniViewModel;
+        private Sprite _currentNextStonePreviewSprite;
         private bool _isDragging;
         private int _placementCompletedFrame = -1;
 
@@ -53,6 +57,16 @@ namespace LimboPuzzleAR.Main.Views
             _oniViewModel.CurrentState
                 .Subscribe(_ => ApplyNextStoneButton(_viewModel.CanSpawnStone.CurrentValue))
                 .AddTo(this);
+
+            if (stoneView != null)
+            {
+                _currentNextStonePreviewSprite = stoneView.CurrentNextStonePreviewSprite;
+                stoneView.NextStonePreviewSpriteChanged
+                    .Subscribe(ApplyNextStonePreview)
+                    .AddTo(this);
+            }
+
+            ApplyNextStonePreview(_currentNextStonePreviewSprite);
         }
 
         private void Update()
@@ -117,6 +131,23 @@ namespace LimboPuzzleAR.Main.Views
             nextStoneButton.interactable = canSpawnStone
                 && _gameStartViewModel.IsPlaying.CurrentValue
                 && _oniViewModel.CurrentState.CurrentValue != OniState.Attack;
+
+            ApplyNextStonePreview(_currentNextStonePreviewSprite);
+        }
+
+        private void ApplyNextStonePreview(Sprite previewSprite)
+        {
+            _currentNextStonePreviewSprite = previewSprite;
+            if (nextStoneIconImage == null)
+            {
+                return;
+            }
+
+            nextStoneIconImage.sprite = _currentNextStonePreviewSprite;
+            nextStoneIconImage.enabled = _currentNextStonePreviewSprite != null;
+            nextStoneIconImage.color = nextStoneButton != null && nextStoneButton.interactable
+                ? Color.white
+                : disabledPreviewColor;
         }
 
         private static bool TryGetPointerDownPosition(out Vector2 screenPosition)

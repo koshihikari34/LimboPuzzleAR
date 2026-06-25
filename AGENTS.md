@@ -12,6 +12,10 @@
 - 削除、大規模な移動、依存関係の追加、破壊的操作は事前に確認する。
 - 可能な範囲で検証し、完了報告に結果または未検証理由を記載する。
 - 不確実な点を推測で仕様化せず、前提または未決事項として明示する。
+- ユーザーがプッシュ、PR作成、マージを担当する。こちらは明示依頼がない限りローカルコミットまでに留める。
+- コミット前に必ず `git config user.name` と `git config user.email` を確認し、`koshihikari34` / `koshihika0@gmail.com` であることを確認する。
+- コミット前に `git diff --cached --name-only` を確認し、意図したファイルだけがステージされていることを確認する。
+- `.vscode/` はコミット対象にしない。
 
 ## プロジェクト概要
 
@@ -57,3 +61,6 @@
 - Scene、Prefab、ProjectSettingsの変更は差分が大きくなりやすいため、必要な範囲に限定する。
 - AR実機依存部分と、Editorで検証できるゲームロジックを分離する。
 - iOS実機でしか確認できない項目は、完了報告で未検証として明示する。
+- `Assets/Settings/DefaultVolumeProfile.asset`、`Assets/Settings/Mobile_RPAsset.asset`、`Assets/Settings/UniversalRenderPipelineGlobalSettings.asset`、`ProjectSettings/UnityConnectSettings.asset` はUnity自動差分が出やすい。意図した変更でない限りコミットしない。
+- `ProjectSettings/ProjectSettings.asset` はBundle Identifier、productNameなど意図した差分だけを確認して扱う。
+- 大きなアセットパックを追加した場合は、ライセンス、配置場所、コミット対象を確認してからステージする。
