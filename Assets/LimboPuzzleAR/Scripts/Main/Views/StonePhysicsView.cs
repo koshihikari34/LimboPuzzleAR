@@ -1,3 +1,4 @@
+using LimboPuzzleAR.Main.Models;
 using LimboPuzzleAR.Main.ViewModels;
 using R3;
 using UnityEngine;
@@ -18,13 +19,17 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField] private float fallDistanceFromPlacement = 0.5f;
 
         private StoneViewModel _viewModel;
+        private OniViewModel _oniViewModel;
         private Rigidbody _targetStone;
         private float _stableElapsedSeconds;
 
         [Inject]
-        public void Construct(StoneViewModel viewModel)
+        public void Construct(
+            StoneViewModel viewModel,
+            OniViewModel oniViewModel)
         {
             _viewModel = viewModel;
+            _oniViewModel = oniViewModel;
         }
 
         private void Start()
@@ -36,6 +41,13 @@ namespace LimboPuzzleAR.Main.Views
 
         private void FixedUpdate()
         {
+            if (_oniViewModel.CurrentState.CurrentValue == OniState.Attack)
+            {
+                _targetStone = null;
+                _stableElapsedSeconds = 0f;
+                return;
+            }
+
             if (_targetStone == null)
             {
                 return;
