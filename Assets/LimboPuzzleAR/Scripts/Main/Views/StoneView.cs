@@ -21,16 +21,30 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField, Min(0f)] private float attackTorqueImpulse = 0.6f;
         [SerializeField, Min(0f)] private float attackImpulseDelaySeconds = 0.25f;
         [SerializeField, Min(0f)] private float attackClearDelaySeconds = 1.2f;
+        [SerializeField, Min(0f)] private float clearGlowDurationSeconds = 0.45f;
+        [SerializeField] private Color clearGlowColor = new(1f, 0.84f, 0.25f, 1f);
+        [SerializeField, Min(0f)] private float clearGlowIntensity = 1.6f;
+        [SerializeField] private ParticleSystem clearParticlePrefab;
+        [SerializeField, Min(1)] private int clearParticleCount = 18;
+        [SerializeField, Min(0.05f)] private float clearParticleDurationSeconds = 0.55f;
+        [SerializeField, Min(0f)] private float clearParticleSpeed = 0.18f;
+
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private StoneViewModel _viewModel;
         private OniViewModel _oniViewModel;
         private readonly Subject<Rigidbody> _releasedStone = new();
         private readonly Subject<Sprite> _nextStonePreviewSpriteChanged = new();
         private readonly List<Rigidbody> _releasedStones = new();
+        private MaterialPropertyBlock _clearMaterialPropertyBlock;
+        private Material _defaultClearParticleMaterial;
         private Rigidbody _currentStone;
         private Rigidbody _nextStonePrefab;
         private Sprite _nextStonePreviewSprite;
         private Coroutine _attackCoroutine;
+        private Coroutine _clearCoroutine;
 
         public Observable<Rigidbody> ReleasedStone => _releasedStone;
 
@@ -80,6 +94,23 @@ namespace LimboPuzzleAR.Main.Views
                 .Where(state => state == OniState.Attack)
                 .Subscribe(_ => BlowAwayStonesForAttack())
                 .AddTo(this);
+        }
+
+        private void OnDestroy()
+        {
+            if (_defaultClearParticleMaterial == null)
+            {
+                return;
+            }
+
+            if (Application.isPlaying)
+            {
+                Destroy(_defaultClearParticleMaterial);
+            }
+            else
+            {
+                DestroyImmediate(_defaultClearParticleMaterial);
+            }
         }
 
         private void OnHoldingChanged(bool isHolding)
@@ -183,8 +214,14 @@ namespace LimboPuzzleAR.Main.Views
         private void ClearReleasedStonesForClear()
         {
             StopAttackCoroutine();
-            ClearReleasedStoneObjects();
-            _viewModel.PrepareNextClearSet();
+            if (_clearCoroutine != null)
+            {
+                return;
+            }
+
+            // クリア演出中に次の石を出せないよう、次セット準備まで一時的に入力を止める。
+            _viewModel.StopInteraction();
+            _clearCoroutine = StartCoroutine(PlayClearSequence());
         }
 
         public void DestroyReleasedStone(Rigidbody releasedStone)
@@ -200,6 +237,7 @@ namespace LimboPuzzleAR.Main.Views
 
         private void ClearHoldingStone()
         {
+            var stoppedClear = StopClearCoroutine();
             StopAttackCoroutine();
             // タイムアップ時は、物理落下へ移行させず掴み中の石だけ片付ける。
             var holdingStone = _currentStone;
@@ -209,11 +247,17 @@ namespace LimboPuzzleAR.Main.Views
                 Destroy(holdingStone.gameObject);
             }
 
+            if (stoppedClear)
+            {
+                ClearReleasedStoneObjects();
+            }
+
             _viewModel.StopInteraction();
         }
 
         private void BlowAwayStonesForAttack()
         {
+            StopClearCoroutine();
             if (_attackCoroutine != null)
             {
                 return;
@@ -224,6 +268,7 @@ namespace LimboPuzzleAR.Main.Views
 
         private void ClearAllStonesForRetry()
         {
+            StopClearCoroutine();
             StopAttackCoroutine();
             // リトライ時は演出を挟まず、残っている石をすべて片付けて同じ設置場所から再開する。
             if (_currentStone != null)
@@ -243,6 +288,23 @@ namespace LimboPuzzleAR.Main.Views
             }
 
             _releasedStones.Clear();
+        }
+
+        private IEnumerator PlayClearSequence()
+        {
+            var clearStones = new List<Rigidbody>(_releasedStones);
+            LockStonesForClear(clearStones);
+            ApplyClearGlow(clearStones);
+            PlayClearParticles(clearStones);
+
+            if (clearGlowDurationSeconds > 0f)
+            {
+                yield return new WaitForSeconds(clearGlowDurationSeconds);
+            }
+
+            ClearReleasedStoneObjects();
+            _viewModel.PrepareNextClearSet();
+            _clearCoroutine = null;
         }
 
         private IEnumerator BlowAwayAndClearStonesForAttack()
@@ -304,6 +366,165 @@ namespace LimboPuzzleAR.Main.Views
             stone.AddTorque(Random.onUnitSphere * attackTorqueImpulse, ForceMode.Impulse);
         }
 
+        private void LockStonesForClear(List<Rigidbody> stones)
+        {
+            foreach (var stone in stones)
+            {
+                if (stone == null)
+                {
+                    continue;
+                }
+
+                stone.linearVelocity = Vector3.zero;
+                stone.angularVelocity = Vector3.zero;
+                stone.isKinematic = true;
+            }
+        }
+
+        private void ApplyClearGlow(List<Rigidbody> stones)
+        {
+            _clearMaterialPropertyBlock ??= new MaterialPropertyBlock();
+
+            var baseColor = clearGlowColor;
+            var emissionColor = clearGlowColor * clearGlowIntensity;
+            emissionColor.a = clearGlowColor.a;
+
+            foreach (var stone in stones)
+            {
+                if (stone == null)
+                {
+                    continue;
+                }
+
+                foreach (var stoneRenderer in stone.GetComponentsInChildren<Renderer>())
+                {
+                    if (stoneRenderer == null)
+                    {
+                        continue;
+                    }
+
+                    stoneRenderer.GetPropertyBlock(_clearMaterialPropertyBlock);
+                    _clearMaterialPropertyBlock.SetColor(BaseColorId, baseColor);
+                    _clearMaterialPropertyBlock.SetColor(ColorId, baseColor);
+                    _clearMaterialPropertyBlock.SetColor(EmissionColorId, emissionColor);
+                    stoneRenderer.SetPropertyBlock(_clearMaterialPropertyBlock);
+                }
+            }
+        }
+
+        private void PlayClearParticles(List<Rigidbody> stones)
+        {
+            var clearPosition = GetStoneGroupCenter(stones);
+            var clearParticle = clearParticlePrefab != null
+                ? Instantiate(clearParticlePrefab, clearPosition, Quaternion.identity)
+                : CreateDefaultClearParticle(clearPosition);
+            clearParticle.Play();
+
+            var main = clearParticle.main;
+            var destroyDelay = main.duration + main.startLifetime.constantMax;
+            Destroy(clearParticle.gameObject, destroyDelay);
+        }
+
+        private ParticleSystem CreateDefaultClearParticle(Vector3 position)
+        {
+            var particleObject = new GameObject("ClearSetParticle");
+            particleObject.transform.position = position;
+
+            var particle = particleObject.AddComponent<ParticleSystem>();
+            particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            var main = particle.main;
+            main.playOnAwake = false;
+            main.loop = false;
+            main.duration = clearParticleDurationSeconds;
+            main.startLifetime = clearParticleDurationSeconds * 0.75f;
+            main.startSpeed = clearParticleSpeed;
+            main.startSize = new ParticleSystem.MinMaxCurve(0.008f, 0.018f);
+            main.startColor = new ParticleSystem.MinMaxGradient(clearGlowColor, Color.white);
+            main.simulationSpace = ParticleSystemSimulationSpace.World;
+
+            var emission = particle.emission;
+            emission.enabled = true;
+            emission.rateOverTime = 0f;
+            emission.SetBursts(new[]
+            {
+                new ParticleSystem.Burst(0f, (short)Mathf.Min(clearParticleCount, short.MaxValue))
+            });
+
+            var shape = particle.shape;
+            shape.enabled = true;
+            shape.shapeType = ParticleSystemShapeType.Sphere;
+            shape.radius = 0.035f;
+
+            var colorOverLifetime = particle.colorOverLifetime;
+            colorOverLifetime.enabled = true;
+            var alphaGradient = new Gradient();
+            alphaGradient.SetKeys(
+                new[]
+                {
+                    new GradientColorKey(clearGlowColor, 0f),
+                    new GradientColorKey(Color.white, 0.35f),
+                    new GradientColorKey(clearGlowColor, 1f)
+                },
+                new[]
+                {
+                    new GradientAlphaKey(1f, 0f),
+                    new GradientAlphaKey(0.85f, 0.35f),
+                    new GradientAlphaKey(0f, 1f)
+                });
+            colorOverLifetime.color = alphaGradient;
+
+            var particleRenderer = particle.GetComponent<ParticleSystemRenderer>();
+            particleRenderer.renderMode = ParticleSystemRenderMode.Billboard;
+            particleRenderer.sortingFudge = 1f;
+            particleRenderer.sharedMaterial = GetDefaultClearParticleMaterial();
+
+            return particle;
+        }
+
+        private Material GetDefaultClearParticleMaterial()
+        {
+            if (_defaultClearParticleMaterial != null)
+            {
+                return _defaultClearParticleMaterial;
+            }
+
+            var shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                ?? Shader.Find("Particles/Standard Unlit")
+                ?? Shader.Find("Sprites/Default");
+            if (shader == null)
+            {
+                return null;
+            }
+
+            _defaultClearParticleMaterial = new Material(shader)
+            {
+                name = "ClearSetParticleMaterialRuntime",
+                color = Color.white
+            };
+            _defaultClearParticleMaterial.SetColor(BaseColorId, Color.white);
+            _defaultClearParticleMaterial.SetColor(ColorId, Color.white);
+            _defaultClearParticleMaterial.SetColor(EmissionColorId, Color.white);
+            return _defaultClearParticleMaterial;
+        }
+
+        private Vector3 GetStoneGroupCenter(List<Rigidbody> stones)
+        {
+            var center = Vector3.zero;
+            var count = 0;
+            foreach (var stone in stones)
+            {
+                if (stone == null)
+                {
+                    continue;
+                }
+
+                center += stone.position;
+                count++;
+            }
+
+            return count > 0 ? center / count : transform.position;
+        }
+
         private void StopAttackCoroutine()
         {
             if (_attackCoroutine == null)
@@ -313,6 +534,18 @@ namespace LimboPuzzleAR.Main.Views
 
             StopCoroutine(_attackCoroutine);
             _attackCoroutine = null;
+        }
+
+        private bool StopClearCoroutine()
+        {
+            if (_clearCoroutine == null)
+            {
+                return false;
+            }
+
+            StopCoroutine(_clearCoroutine);
+            _clearCoroutine = null;
+            return true;
         }
 
         private void ClearReleasedStoneObjects()

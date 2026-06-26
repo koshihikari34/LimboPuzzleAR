@@ -63,6 +63,16 @@ uGUIには自動データバインディングを導入せず、R3による明�
 
 `OniVisualView` はゲームルールを持たず、`OniViewModel.CurrentState` を購読して表示だけを切り替える。攻撃時の移動や破壊演出を追加する場合も、判定はModel/ViewModelへ寄せ、TransformやAnimatorの制御はView側で扱う。
 
+#### チュートリアル/ヘルプ表示
+
+- `TutorialGuideView`: 初回チュートリアルとヘルプ再表示を担当する。
+- チュートリアル画像は `TutorialGuideView` の `illustrationSprites` にページ順で設定する。
+- 表示文言は `TutorialGuideView` 内のページ配列で管理する。
+- ヘルプ/チュートリアル表示中は `Time.timeScale = 0` とし、ゲームタイマー、開始カウントダウン、鬼ステート、鬼の回転、Animator、物理進行を止める。
+- 閉じた時は表示前の `Time.timeScale` に戻す。シーン破棄時も停止状態が残らないよう復帰処理を行う。
+
+`TutorialGuideView` は現在View層に閉じた小さな一時停止制御を持つ。今後ポーズ画面、設定画面、アプリ中断など複数要因の一時停止が増える場合は、専用のPauseModel/PauseViewModelへ分離する。
+
 ### Service
 
 - AR Raycast、永続化、時刻など外部環境との境界を担当する。
@@ -145,6 +155,13 @@ Assets/LimboPuzzleAR/Tests/
 
 アートアセットは原則としてゲーム固有のPrefabや調整済み素材を `Assets/LimboPuzzleAR/` 以下に置く。外部アセットパックを導入する場合は、ライセンスとコミット対象を確認し、必要に応じて元アセットとゲーム用Prefabを分ける。
 
+Editor専用の生成/撮影ツールは `Assets/LimboPuzzleAR/Scripts/Editor/` 以下に置く。現在は次を使用する。
+
+- `StoneThumbnailGenerator`: 石PrefabからNextStone用サムネイルPNGを生成する。
+- `TutorialPlaneCaptureGenerator`: 現在開いている撮影シーンのMain Cameraから、チュートリアル用の平面検知画像を透明背景PNGとして保存する。
+
+撮影用シーンは `Assets/LimboPuzzleAR/Scenes/Photo.unity` に置き、ゲーム本編のシーン遷移対象には含めない。
+
 ## 8. 検証方針
 
 ### Editorで確認する項目
@@ -157,6 +174,8 @@ Assets/LimboPuzzleAR/Tests/
 - Editor用Serviceによる設置フロー
 - TitleのExitボタンによるPlay停止
 - 鬼ステートに応じたUI色、アイコン、3Dモデルの向き、仮アニメーション切り替え
+- ヘルプ/チュートリアル表示中のゲーム一時停止と、閉じた後の再開
+- `Photo.unity` とEditorメニューによるチュートリアル画像撮影
 
 ### 実機で確認するタイミング
 
