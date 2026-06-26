@@ -25,9 +25,13 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField] private Color clearGlowColor = new(1f, 0.84f, 0.25f, 1f);
         [SerializeField, Min(0f)] private float clearGlowIntensity = 1.6f;
         [SerializeField] private ParticleSystem clearParticlePrefab;
-        [SerializeField, Min(1)] private int clearParticleCount = 18;
+        [SerializeField, Min(1)] private int clearParticleCount = 30;
         [SerializeField, Min(0.05f)] private float clearParticleDurationSeconds = 0.55f;
         [SerializeField, Min(0f)] private float clearParticleSpeed = 0.18f;
+        [SerializeField, Min(0.001f)] private float clearParticleStartSizeMin = 0.003f;
+        [SerializeField, Min(0.001f)] private float clearParticleStartSizeMax = 0.007f;
+        [SerializeField, Min(0f)] private float clearParticleUpwardSpeed = 0.24f;
+        [SerializeField, Min(0f)] private float clearParticleBaseOffset = 0.015f;
 
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int ColorId = Shader.PropertyToID("_Color");
@@ -414,7 +418,7 @@ namespace LimboPuzzleAR.Main.Views
 
         private void PlayClearParticles(List<Rigidbody> stones)
         {
-            var clearPosition = GetStoneGroupCenter(stones);
+            var clearPosition = GetStoneGroupClearParticlePosition(stones);
             var clearParticle = clearParticlePrefab != null
                 ? Instantiate(clearParticlePrefab, clearPosition, Quaternion.identity)
                 : CreateDefaultClearParticle(clearPosition);
@@ -429,6 +433,7 @@ namespace LimboPuzzleAR.Main.Views
         {
             var particleObject = new GameObject("ClearSetParticle");
             particleObject.transform.position = position;
+            particleObject.transform.rotation = Quaternion.LookRotation(Vector3.up);
 
             var particle = particleObject.AddComponent<ParticleSystem>();
             particle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -438,7 +443,9 @@ namespace LimboPuzzleAR.Main.Views
             main.duration = clearParticleDurationSeconds;
             main.startLifetime = clearParticleDurationSeconds * 0.75f;
             main.startSpeed = clearParticleSpeed;
-            main.startSize = new ParticleSystem.MinMaxCurve(0.008f, 0.018f);
+            main.startSize = new ParticleSystem.MinMaxCurve(
+                Mathf.Min(clearParticleStartSizeMin, clearParticleStartSizeMax),
+                Mathf.Max(clearParticleStartSizeMin, clearParticleStartSizeMax));
             main.startColor = new ParticleSystem.MinMaxGradient(clearGlowColor, Color.white);
             main.simulationSpace = ParticleSystemSimulationSpace.World;
 
@@ -452,8 +459,15 @@ namespace LimboPuzzleAR.Main.Views
 
             var shape = particle.shape;
             shape.enabled = true;
-            shape.shapeType = ParticleSystemShapeType.Sphere;
-            shape.radius = 0.035f;
+            shape.shapeType = ParticleSystemShapeType.Circle;
+            shape.radius = 0.045f;
+
+            var velocityOverLifetime = particle.velocityOverLifetime;
+            velocityOverLifetime.enabled = true;
+            velocityOverLifetime.space = ParticleSystemSimulationSpace.World;
+            velocityOverLifetime.y = new ParticleSystem.MinMaxCurve(
+                clearParticleUpwardSpeed * 0.7f,
+                clearParticleUpwardSpeed);
 
             var colorOverLifetime = particle.colorOverLifetime;
             colorOverLifetime.enabled = true;
@@ -523,6 +537,39 @@ namespace LimboPuzzleAR.Main.Views
             }
 
             return count > 0 ? center / count : transform.position;
+        }
+
+        private Vector3 GetStoneGroupClearParticlePosition(List<Rigidbody> stones)
+        {
+            var center = GetStoneGroupCenter(stones);
+            var minY = float.PositiveInfinity;
+            var hasColliderBounds = false;
+
+            foreach (var stone in stones)
+            {
+                if (stone == null)
+                {
+                    continue;
+                }
+
+                foreach (var stoneCollider in stone.GetComponentsInChildren<Collider>())
+                {
+                    if (stoneCollider == null || !stoneCollider.enabled)
+                    {
+                        continue;
+                    }
+
+                    minY = Mathf.Min(minY, stoneCollider.bounds.min.y);
+                    hasColliderBounds = true;
+                }
+            }
+
+            if (!hasColliderBounds)
+            {
+                return center;
+            }
+
+            return new Vector3(center.x, minY + clearParticleBaseOffset, center.z);
         }
 
         private void StopAttackCoroutine()

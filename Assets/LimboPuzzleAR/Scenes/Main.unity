@@ -854,7 +854,7 @@ MonoBehaviour:
   clearGlowColor: {r: 1, g: 0.84, b: 0.25, a: 1}
   clearGlowIntensity: 1.6
   clearParticlePrefab: {fileID: 0}
-  clearParticleCount: 18
+  clearParticleCount: 30
   clearParticleDurationSeconds: 0.55
   clearParticleSpeed: 0.18
 --- !u!1 &548692491
