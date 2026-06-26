@@ -846,6 +846,7 @@ MonoBehaviour:
   attackImpulse: 1.8
   attackUpwardImpulse: 0.8
   attackTorqueImpulse: 0.6
+  attackImpulseDelaySeconds: 0.25
   attackClearDelaySeconds: 1.2
 --- !u!1 &548692491
 GameObject:
@@ -4003,6 +4004,7 @@ Transform:
   - {fileID: 1283032143}
   - {fileID: 1855691113}
   - {fileID: 2400000012}
+  - {fileID: 2600000012}
   m_Father: {fileID: 1769567915}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2200000001
@@ -4764,6 +4766,59 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: RETRY
+--- !u!1 &2600000011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2600000012}
+  - component: {fileID: 2600000013}
+  m_Layer: 0
+  m_Name: TutorialGuideView
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2600000012
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2600000011}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2100000042}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2600000013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2600000011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 700d47dd35e541d982e62ded91458e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.TutorialGuideView
+  guideFont: {fileID: 12800000, guid: b1ee8286a95f140718452c12ccb0e209, type: 3}
+  modalSprite: {fileID: 21300000, guid: b0cd8ed769fbe405abb6eb8a4d4429a5, type: 3}
+  illustrationSprites:
+  - {fileID: 21300000, guid: 59e51c3acb5624401ac845e5a1f77ffb, type: 3}
+  - {fileID: 21300000, guid: 358a1eae3ec1c46da8cbd1079c148991, type: 3}
+  - {fileID: 21300000, guid: 5392bf92f9c694ce6b917598f8998fb4, type: 3}
+  - {fileID: 21300000, guid: a1e7683b9df5a46119ddb737177b1131, type: 3}
+  - {fileID: 21300000, guid: 6d95b4b19ada14d4484065cedff9d690, type: 3}
+  - {fileID: 21300000, guid: 49a3e7776d06d440da87278d13f52460, type: 3}
 --- !u!1 &3000000001
 GameObject:
   m_ObjectHideFlags: 0

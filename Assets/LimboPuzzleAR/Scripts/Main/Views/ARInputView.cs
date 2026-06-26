@@ -1,5 +1,6 @@
 using LimboPuzzleAR.Main.ViewModels;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using VContainer;
 
@@ -28,8 +29,30 @@ namespace LimboPuzzleAR.Main.Views
 
             if (TryGetPointerDownPosition(out var screenPosition))
             {
+                if (IsPointerOverUi())
+                {
+                    return;
+                }
+
                 _viewModel.TryPlace(screenPosition);
             }
+        }
+
+        private static bool IsPointerOverUi()
+        {
+            if (EventSystem.current == null)
+            {
+                return false;
+            }
+
+            var touchscreen = Touchscreen.current;
+            if (touchscreen != null && touchscreen.primaryTouch.press.isPressed)
+            {
+                return EventSystem.current.IsPointerOverGameObject(
+                    touchscreen.primaryTouch.touchId.ReadValue());
+            }
+
+            return EventSystem.current.IsPointerOverGameObject();
         }
 
         private static bool TryGetPointerDownPosition(out Vector2 screenPosition)

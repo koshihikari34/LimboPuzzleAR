@@ -19,6 +19,7 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField, Min(0f)] private float attackImpulse = 1.8f;
         [SerializeField, Min(0f)] private float attackUpwardImpulse = 0.8f;
         [SerializeField, Min(0f)] private float attackTorqueImpulse = 0.6f;
+        [SerializeField, Min(0f)] private float attackImpulseDelaySeconds = 0.25f;
         [SerializeField, Min(0f)] private float attackClearDelaySeconds = 1.2f;
 
         private StoneViewModel _viewModel;
@@ -247,6 +248,11 @@ namespace LimboPuzzleAR.Main.Views
         private IEnumerator BlowAwayAndClearStonesForAttack()
         {
             MakeHoldingStoneAttackTarget();
+
+            if (attackImpulseDelaySeconds > 0f)
+            {
+                yield return new WaitForSeconds(attackImpulseDelaySeconds);
+            }
 
             // 仕様: アウト時は即消去せず、鬼の攻撃で石が崩れたように見せてから片付ける。
             foreach (var releasedStone in _releasedStones)
