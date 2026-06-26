@@ -465,9 +465,7 @@ namespace LimboPuzzleAR.Main.Views
             var velocityOverLifetime = particle.velocityOverLifetime;
             velocityOverLifetime.enabled = true;
             velocityOverLifetime.space = ParticleSystemSimulationSpace.World;
-            velocityOverLifetime.y = new ParticleSystem.MinMaxCurve(
-                clearParticleUpwardSpeed * 0.7f,
-                clearParticleUpwardSpeed);
+            velocityOverLifetime.y = new ParticleSystem.MinMaxCurve(clearParticleUpwardSpeed);
 
             var colorOverLifetime = particle.colorOverLifetime;
             colorOverLifetime.enabled = true;

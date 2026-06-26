@@ -255,7 +255,7 @@ namespace LimboPuzzleAR.Title.Views
         {
             if (highScoreText != null)
             {
-                highScoreText.text = $"High Score: {_latestHighScore}";
+                highScoreText.text = $"HIGH SCORE {_latestHighScore}";
             }
 
             SetMenuVisible(true, 0f);
