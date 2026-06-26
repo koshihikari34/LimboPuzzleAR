@@ -119,7 +119,7 @@ namespace LimboPuzzleAR.Title.Views
                 return;
             }
 
-            highScoreText.text = $"High Score: {_latestHighScore}";
+            highScoreText.text = $"HIGH SCORE {_latestHighScore}";
         }
 
         private void SetupTitleIntro()

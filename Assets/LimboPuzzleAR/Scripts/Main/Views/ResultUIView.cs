@@ -89,9 +89,9 @@ namespace LimboPuzzleAR.Main.Views
                 highScore = currentScore;
             }
 
-            ApplyText(scoreText, $"Score {currentScore}");
-            ApplyText(highScoreText, $"High Score {highScore}");
-            ApplyText(newRecordText, isNewRecord ? "New Record!" : string.Empty);
+            ApplyText(scoreText, $"SCORE {currentScore}");
+            ApplyText(highScoreText, $"HIGH SCORE {highScore}");
+            ApplyText(newRecordText, isNewRecord ? "NEW RECORD!" : string.Empty);
             SetResultVisible(true);
         }
 
