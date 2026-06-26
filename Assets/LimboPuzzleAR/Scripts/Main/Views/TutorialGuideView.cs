@@ -14,6 +14,9 @@ namespace LimboPuzzleAR.Main.Views
         [SerializeField] private Sprite modalSprite;
         [SerializeField] private Sprite[] illustrationSprites;
 
+        private static float _previousTimeScale = 1f;
+        private static bool _isPausingGameplay;
+
         private static readonly string[] Titles =
         {
             "平面を探して置く",
@@ -86,6 +89,7 @@ namespace LimboPuzzleAR.Main.Views
 
             _pageIndex = 0;
             _modalRoot.SetActive(true);
+            PauseGameplay();
             if (_helpButtonObject != null)
             {
                 _helpButtonObject.SetActive(false);
@@ -107,10 +111,17 @@ namespace LimboPuzzleAR.Main.Views
                 _modalRoot.SetActive(false);
             }
 
+            ResumeGameplay();
+
             if (_helpButtonObject != null)
             {
                 _helpButtonObject.SetActive(true);
             }
+        }
+
+        private void OnDestroy()
+        {
+            ResumeGameplay();
         }
 
         private void MovePage(int direction)
@@ -143,6 +154,29 @@ namespace LimboPuzzleAR.Main.Views
             }
 
             return illustrationSprites[index];
+        }
+
+        private static void PauseGameplay()
+        {
+            if (_isPausingGameplay)
+            {
+                return;
+            }
+
+            _previousTimeScale = Time.timeScale;
+            Time.timeScale = 0f;
+            _isPausingGameplay = true;
+        }
+
+        private static void ResumeGameplay()
+        {
+            if (!_isPausingGameplay)
+            {
+                return;
+            }
+
+            Time.timeScale = _previousTimeScale;
+            _isPausingGameplay = false;
         }
 
         private void BuildModal(Transform parent)
