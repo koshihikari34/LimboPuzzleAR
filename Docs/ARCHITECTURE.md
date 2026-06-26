@@ -73,6 +73,14 @@ uGUIには自動データバインディングを導入せず、R3による明�
 
 `TutorialGuideView` は現在View層に閉じた小さな一時停止制御を持つ。今後ポーズ画面、設定画面、アプリ中断など複数要因の一時停止が増える場合は、専用のPauseModel/PauseViewModelへ分離する。
 
+#### タイトル表示
+
+- `TitleUIView`: タイトル画面のuGUI表示と入力を `TitleViewModel` へ接続する。
+- 起動直後は `TAP SCREEN` を表示し、画面タップ後にハイスコア、START、EXITを表示する。
+- `TAP SCREEN` の点滅、メニューのフェード、タイトルロゴのグリッチはView層の演出として扱い、TitleViewModelには持ち込まない。
+- タイトルロゴのグリッチは `TitleLogoGlitch.shader` / `TitleLogoGlitch.mat` を `Image` に割り当て、実行時にMaterialインスタンスの `_GlitchAmount` と `_GlitchJitter` を短時間だけ変更する。
+- グリッチ色はシアン、マゼンタ、`#2FFF00` を使用する。ゲームルールや保存状態には影響しない純粋な表示演出とする。
+
 ### Service
 
 - AR Raycast、永続化、時刻など外部環境との境界を担当する。
@@ -173,6 +181,7 @@ Editor専用の生成/撮影ツールは `Assets/LimboPuzzleAR/Scripts/Editor/` 
 - タイマー、スコア、ハイスコア更新
 - Editor用Serviceによる設置フロー
 - TitleのExitボタンによるPlay停止
+- Titleの `TAP SCREEN` 点滅、画面タップ後のメニュー表示、ロゴグリッチ
 - 鬼ステートに応じたUI色、アイコン、3Dモデルの向き、仮アニメーション切り替え
 - ヘルプ/チュートリアル表示中のゲーム一時停止と、閉じた後の再開
 - `Photo.unity` とEditorメニューによるチュートリアル画像撮影
