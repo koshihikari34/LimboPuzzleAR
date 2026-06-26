@@ -287,6 +287,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LimboPuzzleAR.Main.Views.ScoreUIView
   scoreText: {fileID: 2027663528}
+  scorePunchScale: 1.18
+  scorePunchDurationSeconds: 0.18
 --- !u!1 &402464904
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,6 +850,13 @@ MonoBehaviour:
   attackTorqueImpulse: 0.6
   attackImpulseDelaySeconds: 0.25
   attackClearDelaySeconds: 1.2
+  clearGlowDurationSeconds: 0.45
+  clearGlowColor: {r: 1, g: 0.84, b: 0.25, a: 1}
+  clearGlowIntensity: 1.6
+  clearParticlePrefab: {fileID: 0}
+  clearParticleCount: 18
+  clearParticleDurationSeconds: 0.55
+  clearParticleSpeed: 0.18
 --- !u!1 &548692491
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,7 +1393,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 7d637c66138034fc8bd0143e668be3d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1507,6 +1516,14 @@ MonoBehaviour:
   placementRoot: {fileID: 1435903735}
   heightGuide: {fileID: 493876408}
   planeManager: {fileID: 1453228944}
+  guideBounceOffsetMeters: 0.025
+  guideBounceDurationSeconds: 0.22
+  useGeneratedGuideFrame: 1
+  guideFrameRadiusXMeters: 0.13
+  guideFrameRadiusZMeters: 0.09
+  guideFrameSegments: 48
+  guideFrameLineWidthMeters: 0.006
+  guideFrameColor: {r: 1, g: 0.92, b: 0.08, a: 0.75}
 --- !u!4 &872771697
 Transform:
   m_ObjectHideFlags: 0
@@ -4254,7 +4271,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 7b6dbddad59724d5c9a2cb322abf0e9b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
