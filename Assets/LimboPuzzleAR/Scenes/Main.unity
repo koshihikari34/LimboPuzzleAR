@@ -4813,7 +4813,7 @@ MonoBehaviour:
   guideFont: {fileID: 12800000, guid: b1ee8286a95f140718452c12ccb0e209, type: 3}
   modalSprite: {fileID: 21300000, guid: b0cd8ed769fbe405abb6eb8a4d4429a5, type: 3}
   illustrationSprites:
-  - {fileID: 21300000, guid: f590e3f4a74e84639acffccc4bb90825, type: 3}
+  - {fileID: 21300000, guid: 59e51c3acb5624401ac845e5a1f77ffb, type: 3}
   - {fileID: 21300000, guid: 358a1eae3ec1c46da8cbd1079c148991, type: 3}
   - {fileID: 21300000, guid: 5392bf92f9c694ce6b917598f8998fb4, type: 3}
   - {fileID: 21300000, guid: a1e7683b9df5a46119ddb737177b1131, type: 3}
