@@ -30,13 +30,18 @@ namespace LimboPuzzleAR.Title.Views
         [SerializeField, Min(0.1f)] private float logoGlitchIntervalMaxSeconds = 6f;
         [SerializeField, Min(0.05f)] private float logoGlitchDurationSeconds = 0.5f;
         [SerializeField, Range(0f, 1f)] private float logoGlitchStrength = 1f;
-        [SerializeField, Min(0.05f)] private float startTransitionSeconds = 0.35f;
+        [SerializeField, Min(0.05f)] private float startTransitionSeconds = 0.22f;
+        [SerializeField, Min(0.05f)] private float startTransitionCloseSeconds = 0.35f;
         [SerializeField, Range(0f, 1f)] private float startTransitionGlitchStrength = 1f;
 
         private TitleViewModel _viewModel;
         private CanvasGroup _highScoreGroup;
         private CanvasGroup _startButtonGroup;
         private CanvasGroup _exitButtonGroup;
+        private Canvas _startTransitionOverlayCanvas;
+        private CanvasGroup _startTransitionOverlayGroup;
+        private RectTransform _startTransitionTopCurtain;
+        private RectTransform _startTransitionBottomCurtain;
         private Material _titleLogoGlitchInstance;
         private int _latestHighScore;
         private bool _isMenuVisible;
@@ -54,6 +59,7 @@ namespace LimboPuzzleAR.Title.Views
         {
             SetupTitleIntro();
             SetupTitleLogoGlitch();
+            SetupStartTransitionOverlay();
 
             _viewModel.HighScore
                 .Subscribe(ApplyHighScore)
@@ -275,6 +281,7 @@ namespace LimboPuzzleAR.Title.Views
         private IEnumerator PlayStartTransition()
         {
             SetMenuInteractable(false);
+            SetStartTransitionCurtain(0f);
 
             if (tapScreenButton != null)
             {
@@ -297,6 +304,23 @@ namespace LimboPuzzleAR.Title.Views
                 yield return null;
             }
 
+            SetMenuVisible(false, 0f);
+            if (titleLogoImage != null)
+            {
+                titleLogoImage.enabled = false;
+            }
+
+            BringStartTransitionCurtainToFront();
+            elapsedSeconds = 0f;
+            while (elapsedSeconds < startTransitionCloseSeconds)
+            {
+                elapsedSeconds += Time.unscaledDeltaTime;
+                var phase = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsedSeconds / startTransitionCloseSeconds));
+                SetStartTransitionCurtain(phase);
+                yield return null;
+            }
+
+            SetStartTransitionCurtain(1f);
             _viewModel.StartGame();
         }
 
@@ -337,6 +361,106 @@ namespace LimboPuzzleAR.Title.Views
             ApplyMenuInteractable(_highScoreGroup, isInteractable);
             ApplyMenuInteractable(_startButtonGroup, isInteractable);
             ApplyMenuInteractable(_exitButtonGroup, isInteractable);
+        }
+
+        private void SetupStartTransitionOverlay()
+        {
+            var transitionCanvasObject = new GameObject(
+                "StartTransitionCanvas",
+                typeof(RectTransform),
+                typeof(Canvas),
+                typeof(CanvasScaler),
+                typeof(GraphicRaycaster));
+            transitionCanvasObject.layer = gameObject.layer;
+
+            _startTransitionOverlayCanvas = transitionCanvasObject.GetComponent<Canvas>();
+            _startTransitionOverlayCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _startTransitionOverlayCanvas.overrideSorting = true;
+            _startTransitionOverlayCanvas.sortingOrder = short.MaxValue;
+
+            var transitionCanvasScaler = transitionCanvasObject.GetComponent<CanvasScaler>();
+            transitionCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            transitionCanvasScaler.referenceResolution = new Vector2(1080f, 1920f);
+            transitionCanvasScaler.matchWidthOrHeight = 1f;
+
+            _startTransitionOverlayGroup = transitionCanvasObject.AddComponent<CanvasGroup>();
+            _startTransitionOverlayGroup.alpha = 0f;
+            _startTransitionOverlayGroup.interactable = false;
+            _startTransitionOverlayGroup.blocksRaycasts = false;
+
+            _startTransitionTopCurtain = CreateStartTransitionCurtain(
+                transitionCanvasObject.transform,
+                "StartTransitionTopCurtain",
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f));
+            _startTransitionBottomCurtain = CreateStartTransitionCurtain(
+                transitionCanvasObject.transform,
+                "StartTransitionBottomCurtain",
+                Vector2.zero,
+                new Vector2(1f, 0f),
+                new Vector2(0.5f, 0f));
+
+            SetStartTransitionCurtain(0f);
+        }
+
+        private void BringStartTransitionCurtainToFront()
+        {
+            if (_startTransitionOverlayCanvas == null)
+            {
+                return;
+            }
+
+            _startTransitionOverlayCanvas.sortingOrder = short.MaxValue;
+        }
+
+        private static RectTransform CreateStartTransitionCurtain(
+            Transform parent,
+            string objectName,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            Vector2 pivot)
+        {
+            var curtainObject = new GameObject(
+                objectName,
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image));
+            curtainObject.layer = parent.gameObject.layer;
+            curtainObject.transform.SetParent(parent, false);
+
+            var curtainRect = curtainObject.GetComponent<RectTransform>();
+            curtainRect.anchorMin = anchorMin;
+            curtainRect.anchorMax = anchorMax;
+            curtainRect.pivot = pivot;
+            curtainRect.anchoredPosition = Vector2.zero;
+            curtainRect.sizeDelta = Vector2.zero;
+
+            var curtainImage = curtainObject.GetComponent<Image>();
+            curtainImage.color = Color.black;
+            curtainImage.raycastTarget = false;
+
+            return curtainRect;
+        }
+
+        private void SetStartTransitionCurtain(float phase)
+        {
+            if (_startTransitionOverlayGroup != null)
+            {
+                _startTransitionOverlayGroup.alpha = phase > 0f ? 1f : 0f;
+                _startTransitionOverlayGroup.blocksRaycasts = phase > 0f;
+            }
+
+            var height = Mathf.Lerp(0f, 960f, phase);
+            if (_startTransitionTopCurtain != null)
+            {
+                _startTransitionTopCurtain.sizeDelta = new Vector2(0f, height);
+            }
+
+            if (_startTransitionBottomCurtain != null)
+            {
+                _startTransitionBottomCurtain.sizeDelta = new Vector2(0f, height);
+            }
         }
 
         private static void ApplyMenuGroup(CanvasGroup group, bool isVisible, float alpha)
