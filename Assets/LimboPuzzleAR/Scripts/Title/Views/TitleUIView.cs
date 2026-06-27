@@ -25,10 +25,13 @@ namespace LimboPuzzleAR.Title.Views
         [SerializeField] private Button tapScreenButton;
         [SerializeField, Min(0.1f)] private float tapBlinkSeconds = 0.85f;
         [SerializeField, Min(0.1f)] private float menuFadeSeconds = 0.25f;
+        [SerializeField, Min(0f)] private float firstLogoGlitchDelaySeconds = 1.2f;
         [SerializeField, Min(0.1f)] private float logoGlitchIntervalMinSeconds = 3f;
         [SerializeField, Min(0.1f)] private float logoGlitchIntervalMaxSeconds = 6f;
         [SerializeField, Min(0.05f)] private float logoGlitchDurationSeconds = 0.5f;
         [SerializeField, Range(0f, 1f)] private float logoGlitchStrength = 1f;
+        [SerializeField, Min(0.05f)] private float startTransitionSeconds = 0.35f;
+        [SerializeField, Range(0f, 1f)] private float startTransitionGlitchStrength = 1f;
 
         private TitleViewModel _viewModel;
         private CanvasGroup _highScoreGroup;
@@ -39,6 +42,7 @@ namespace LimboPuzzleAR.Title.Views
         private bool _isMenuVisible;
         private Coroutine _tapBlinkCoroutine;
         private Coroutine _logoGlitchCoroutine;
+        private Coroutine _startTransitionCoroutine;
 
         [Inject]
         public void Construct(TitleViewModel viewModel)
@@ -57,7 +61,7 @@ namespace LimboPuzzleAR.Title.Views
 
             if (startButton != null)
             {
-                startButton.onClick.AddListener(_viewModel.StartGame);
+                startButton.onClick.AddListener(StartGameWithTransition);
             }
 
             if (exitButton != null)
@@ -75,7 +79,7 @@ namespace LimboPuzzleAR.Title.Views
         {
             if (startButton != null)
             {
-                startButton.onClick.RemoveListener(_viewModel.StartGame);
+                startButton.onClick.RemoveListener(StartGameWithTransition);
             }
 
             if (exitButton != null)
@@ -192,25 +196,32 @@ namespace LimboPuzzleAR.Title.Views
 
         private IEnumerator PlayLogoGlitchLoop()
         {
+            yield return new WaitForSecondsRealtime(firstLogoGlitchDelaySeconds);
+
             while (true)
             {
+                yield return PlayLogoGlitchOnce();
+
                 var minInterval = Mathf.Min(logoGlitchIntervalMinSeconds, logoGlitchIntervalMaxSeconds);
                 var maxInterval = Mathf.Max(logoGlitchIntervalMinSeconds, logoGlitchIntervalMaxSeconds);
                 yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(minInterval, maxInterval));
-
-                var elapsedSeconds = 0f;
-                var jitter = UnityEngine.Random.Range(0.7f, 1f);
-                while (elapsedSeconds < logoGlitchDurationSeconds)
-                {
-                    elapsedSeconds += Time.unscaledDeltaTime;
-                    var phase = Mathf.Clamp01(elapsedSeconds / logoGlitchDurationSeconds);
-                    var envelope = Mathf.Sin(phase * Mathf.PI);
-                    SetLogoGlitch(envelope * logoGlitchStrength, jitter);
-                    yield return null;
-                }
-
-                SetLogoGlitch(0f, 0f);
             }
+        }
+
+        private IEnumerator PlayLogoGlitchOnce()
+        {
+            var elapsedSeconds = 0f;
+            var jitter = UnityEngine.Random.Range(0.7f, 1f);
+            while (elapsedSeconds < logoGlitchDurationSeconds)
+            {
+                elapsedSeconds += Time.unscaledDeltaTime;
+                var phase = Mathf.Clamp01(elapsedSeconds / logoGlitchDurationSeconds);
+                var envelope = Mathf.Sin(phase * Mathf.PI);
+                SetLogoGlitch(envelope * logoGlitchStrength, jitter);
+                yield return null;
+            }
+
+            SetLogoGlitch(0f, 0f);
         }
 
         private void SetLogoGlitch(float amount, float jitter)
@@ -251,6 +262,44 @@ namespace LimboPuzzleAR.Title.Views
             StartCoroutine(FadeMenuIn());
         }
 
+        private void StartGameWithTransition()
+        {
+            if (_startTransitionCoroutine != null)
+            {
+                return;
+            }
+
+            _startTransitionCoroutine = StartCoroutine(PlayStartTransition());
+        }
+
+        private IEnumerator PlayStartTransition()
+        {
+            SetMenuInteractable(false);
+
+            if (tapScreenButton != null)
+            {
+                tapScreenButton.interactable = false;
+            }
+
+            if (_logoGlitchCoroutine != null)
+            {
+                StopCoroutine(_logoGlitchCoroutine);
+                _logoGlitchCoroutine = null;
+            }
+
+            var elapsedSeconds = 0f;
+            while (elapsedSeconds < startTransitionSeconds)
+            {
+                elapsedSeconds += Time.unscaledDeltaTime;
+                var phase = Mathf.Clamp01(elapsedSeconds / startTransitionSeconds);
+                SetMenuVisible(true, 1f - phase);
+                SetLogoGlitch(startTransitionGlitchStrength, 1f);
+                yield return null;
+            }
+
+            _viewModel.StartGame();
+        }
+
         private IEnumerator FadeMenuIn()
         {
             if (highScoreText != null)
@@ -283,6 +332,13 @@ namespace LimboPuzzleAR.Title.Views
             ApplyMenuGroup(_exitButtonGroup, isVisible, alpha);
         }
 
+        private void SetMenuInteractable(bool isInteractable)
+        {
+            ApplyMenuInteractable(_highScoreGroup, isInteractable);
+            ApplyMenuInteractable(_startButtonGroup, isInteractable);
+            ApplyMenuInteractable(_exitButtonGroup, isInteractable);
+        }
+
         private static void ApplyMenuGroup(CanvasGroup group, bool isVisible, float alpha)
         {
             if (group == null)
@@ -294,6 +350,17 @@ namespace LimboPuzzleAR.Title.Views
             group.alpha = alpha;
             group.interactable = isVisible && alpha >= 1f;
             group.blocksRaycasts = isVisible && alpha >= 1f;
+        }
+
+        private static void ApplyMenuInteractable(CanvasGroup group, bool isInteractable)
+        {
+            if (group == null)
+            {
+                return;
+            }
+
+            group.interactable = isInteractable;
+            group.blocksRaycasts = isInteractable;
         }
 
         private static void SetTextAlpha(TextMeshProUGUI text, float alpha)
