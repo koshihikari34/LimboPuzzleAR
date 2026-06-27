@@ -25,20 +25,29 @@ namespace LimboPuzzleAR.Title.Views
         [SerializeField] private Button tapScreenButton;
         [SerializeField, Min(0.1f)] private float tapBlinkSeconds = 0.85f;
         [SerializeField, Min(0.1f)] private float menuFadeSeconds = 0.25f;
+        [SerializeField, Min(0f)] private float firstLogoGlitchDelaySeconds = 1.2f;
         [SerializeField, Min(0.1f)] private float logoGlitchIntervalMinSeconds = 3f;
         [SerializeField, Min(0.1f)] private float logoGlitchIntervalMaxSeconds = 6f;
         [SerializeField, Min(0.05f)] private float logoGlitchDurationSeconds = 0.5f;
         [SerializeField, Range(0f, 1f)] private float logoGlitchStrength = 1f;
+        [SerializeField, Min(0.05f)] private float startTransitionSeconds = 0.22f;
+        [SerializeField, Min(0.05f)] private float startTransitionCloseSeconds = 0.35f;
+        [SerializeField, Range(0f, 1f)] private float startTransitionGlitchStrength = 1f;
 
         private TitleViewModel _viewModel;
         private CanvasGroup _highScoreGroup;
         private CanvasGroup _startButtonGroup;
         private CanvasGroup _exitButtonGroup;
+        private Canvas _startTransitionOverlayCanvas;
+        private CanvasGroup _startTransitionOverlayGroup;
+        private RectTransform _startTransitionTopCurtain;
+        private RectTransform _startTransitionBottomCurtain;
         private Material _titleLogoGlitchInstance;
         private int _latestHighScore;
         private bool _isMenuVisible;
         private Coroutine _tapBlinkCoroutine;
         private Coroutine _logoGlitchCoroutine;
+        private Coroutine _startTransitionCoroutine;
 
         [Inject]
         public void Construct(TitleViewModel viewModel)
@@ -50,6 +59,7 @@ namespace LimboPuzzleAR.Title.Views
         {
             SetupTitleIntro();
             SetupTitleLogoGlitch();
+            SetupStartTransitionOverlay();
 
             _viewModel.HighScore
                 .Subscribe(ApplyHighScore)
@@ -57,7 +67,7 @@ namespace LimboPuzzleAR.Title.Views
 
             if (startButton != null)
             {
-                startButton.onClick.AddListener(_viewModel.StartGame);
+                startButton.onClick.AddListener(StartGameWithTransition);
             }
 
             if (exitButton != null)
@@ -75,7 +85,7 @@ namespace LimboPuzzleAR.Title.Views
         {
             if (startButton != null)
             {
-                startButton.onClick.RemoveListener(_viewModel.StartGame);
+                startButton.onClick.RemoveListener(StartGameWithTransition);
             }
 
             if (exitButton != null)
@@ -119,7 +129,7 @@ namespace LimboPuzzleAR.Title.Views
                 return;
             }
 
-            highScoreText.text = $"High Score: {_latestHighScore}";
+            highScoreText.text = $"HIGH SCORE {_latestHighScore}";
         }
 
         private void SetupTitleIntro()
@@ -192,25 +202,32 @@ namespace LimboPuzzleAR.Title.Views
 
         private IEnumerator PlayLogoGlitchLoop()
         {
+            yield return new WaitForSecondsRealtime(firstLogoGlitchDelaySeconds);
+
             while (true)
             {
+                yield return PlayLogoGlitchOnce();
+
                 var minInterval = Mathf.Min(logoGlitchIntervalMinSeconds, logoGlitchIntervalMaxSeconds);
                 var maxInterval = Mathf.Max(logoGlitchIntervalMinSeconds, logoGlitchIntervalMaxSeconds);
                 yield return new WaitForSecondsRealtime(UnityEngine.Random.Range(minInterval, maxInterval));
-
-                var elapsedSeconds = 0f;
-                var jitter = UnityEngine.Random.Range(0.7f, 1f);
-                while (elapsedSeconds < logoGlitchDurationSeconds)
-                {
-                    elapsedSeconds += Time.unscaledDeltaTime;
-                    var phase = Mathf.Clamp01(elapsedSeconds / logoGlitchDurationSeconds);
-                    var envelope = Mathf.Sin(phase * Mathf.PI);
-                    SetLogoGlitch(envelope * logoGlitchStrength, jitter);
-                    yield return null;
-                }
-
-                SetLogoGlitch(0f, 0f);
             }
+        }
+
+        private IEnumerator PlayLogoGlitchOnce()
+        {
+            var elapsedSeconds = 0f;
+            var jitter = UnityEngine.Random.Range(0.7f, 1f);
+            while (elapsedSeconds < logoGlitchDurationSeconds)
+            {
+                elapsedSeconds += Time.unscaledDeltaTime;
+                var phase = Mathf.Clamp01(elapsedSeconds / logoGlitchDurationSeconds);
+                var envelope = Mathf.Sin(phase * Mathf.PI);
+                SetLogoGlitch(envelope * logoGlitchStrength, jitter);
+                yield return null;
+            }
+
+            SetLogoGlitch(0f, 0f);
         }
 
         private void SetLogoGlitch(float amount, float jitter)
@@ -251,11 +268,67 @@ namespace LimboPuzzleAR.Title.Views
             StartCoroutine(FadeMenuIn());
         }
 
+        private void StartGameWithTransition()
+        {
+            if (_startTransitionCoroutine != null)
+            {
+                return;
+            }
+
+            _startTransitionCoroutine = StartCoroutine(PlayStartTransition());
+        }
+
+        private IEnumerator PlayStartTransition()
+        {
+            SetMenuInteractable(false);
+            SetStartTransitionCurtain(0f);
+
+            if (tapScreenButton != null)
+            {
+                tapScreenButton.interactable = false;
+            }
+
+            if (_logoGlitchCoroutine != null)
+            {
+                StopCoroutine(_logoGlitchCoroutine);
+                _logoGlitchCoroutine = null;
+            }
+
+            var elapsedSeconds = 0f;
+            while (elapsedSeconds < startTransitionSeconds)
+            {
+                elapsedSeconds += Time.unscaledDeltaTime;
+                var phase = Mathf.Clamp01(elapsedSeconds / startTransitionSeconds);
+                SetMenuVisible(true, 1f - phase);
+                SetLogoGlitch(startTransitionGlitchStrength, 1f);
+                yield return null;
+            }
+
+            SetMenuVisible(false, 0f);
+            if (titleLogoImage != null)
+            {
+                titleLogoImage.enabled = false;
+            }
+
+            BringStartTransitionCurtainToFront();
+            elapsedSeconds = 0f;
+            while (elapsedSeconds < startTransitionCloseSeconds)
+            {
+                elapsedSeconds += Time.unscaledDeltaTime;
+                var phase = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsedSeconds / startTransitionCloseSeconds));
+                SetStartTransitionCurtain(phase);
+                yield return null;
+            }
+
+            SetStartTransitionCurtain(1f);
+            _viewModel.StartGame();
+        }
+
         private IEnumerator FadeMenuIn()
         {
             if (highScoreText != null)
             {
-                highScoreText.text = $"High Score: {_latestHighScore}";
+                highScoreText.text = $"HIGH SCORE {_latestHighScore}";
             }
 
             SetMenuVisible(true, 0f);
@@ -283,6 +356,113 @@ namespace LimboPuzzleAR.Title.Views
             ApplyMenuGroup(_exitButtonGroup, isVisible, alpha);
         }
 
+        private void SetMenuInteractable(bool isInteractable)
+        {
+            ApplyMenuInteractable(_highScoreGroup, isInteractable);
+            ApplyMenuInteractable(_startButtonGroup, isInteractable);
+            ApplyMenuInteractable(_exitButtonGroup, isInteractable);
+        }
+
+        private void SetupStartTransitionOverlay()
+        {
+            var transitionCanvasObject = new GameObject(
+                "StartTransitionCanvas",
+                typeof(RectTransform),
+                typeof(Canvas),
+                typeof(CanvasScaler),
+                typeof(GraphicRaycaster));
+            transitionCanvasObject.layer = gameObject.layer;
+
+            _startTransitionOverlayCanvas = transitionCanvasObject.GetComponent<Canvas>();
+            _startTransitionOverlayCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _startTransitionOverlayCanvas.overrideSorting = true;
+            _startTransitionOverlayCanvas.sortingOrder = short.MaxValue;
+
+            var transitionCanvasScaler = transitionCanvasObject.GetComponent<CanvasScaler>();
+            transitionCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            transitionCanvasScaler.referenceResolution = new Vector2(1080f, 1920f);
+            transitionCanvasScaler.matchWidthOrHeight = 1f;
+
+            _startTransitionOverlayGroup = transitionCanvasObject.AddComponent<CanvasGroup>();
+            _startTransitionOverlayGroup.alpha = 0f;
+            _startTransitionOverlayGroup.interactable = false;
+            _startTransitionOverlayGroup.blocksRaycasts = false;
+
+            _startTransitionTopCurtain = CreateStartTransitionCurtain(
+                transitionCanvasObject.transform,
+                "StartTransitionTopCurtain",
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f));
+            _startTransitionBottomCurtain = CreateStartTransitionCurtain(
+                transitionCanvasObject.transform,
+                "StartTransitionBottomCurtain",
+                Vector2.zero,
+                new Vector2(1f, 0f),
+                new Vector2(0.5f, 0f));
+
+            SetStartTransitionCurtain(0f);
+        }
+
+        private void BringStartTransitionCurtainToFront()
+        {
+            if (_startTransitionOverlayCanvas == null)
+            {
+                return;
+            }
+
+            _startTransitionOverlayCanvas.sortingOrder = short.MaxValue;
+        }
+
+        private static RectTransform CreateStartTransitionCurtain(
+            Transform parent,
+            string objectName,
+            Vector2 anchorMin,
+            Vector2 anchorMax,
+            Vector2 pivot)
+        {
+            var curtainObject = new GameObject(
+                objectName,
+                typeof(RectTransform),
+                typeof(CanvasRenderer),
+                typeof(Image));
+            curtainObject.layer = parent.gameObject.layer;
+            curtainObject.transform.SetParent(parent, false);
+
+            var curtainRect = curtainObject.GetComponent<RectTransform>();
+            curtainRect.anchorMin = anchorMin;
+            curtainRect.anchorMax = anchorMax;
+            curtainRect.pivot = pivot;
+            curtainRect.anchoredPosition = Vector2.zero;
+            curtainRect.sizeDelta = Vector2.zero;
+
+            var curtainImage = curtainObject.GetComponent<Image>();
+            curtainImage.color = Color.black;
+            curtainImage.raycastTarget = false;
+
+            return curtainRect;
+        }
+
+        private void SetStartTransitionCurtain(float phase)
+        {
+            if (_startTransitionOverlayGroup != null)
+            {
+                _startTransitionOverlayGroup.alpha = phase > 0f ? 1f : 0f;
+                _startTransitionOverlayGroup.blocksRaycasts = phase > 0f;
+            }
+
+            var height = Mathf.Lerp(0f, 960f, phase);
+            if (_startTransitionTopCurtain != null)
+            {
+                _startTransitionTopCurtain.sizeDelta = new Vector2(0f, height);
+            }
+
+            if (_startTransitionBottomCurtain != null)
+            {
+                _startTransitionBottomCurtain.sizeDelta = new Vector2(0f, height);
+            }
+        }
+
         private static void ApplyMenuGroup(CanvasGroup group, bool isVisible, float alpha)
         {
             if (group == null)
@@ -294,6 +474,17 @@ namespace LimboPuzzleAR.Title.Views
             group.alpha = alpha;
             group.interactable = isVisible && alpha >= 1f;
             group.blocksRaycasts = isVisible && alpha >= 1f;
+        }
+
+        private static void ApplyMenuInteractable(CanvasGroup group, bool isInteractable)
+        {
+            if (group == null)
+            {
+                return;
+            }
+
+            group.interactable = isInteractable;
+            group.blocksRaycasts = isInteractable;
         }
 
         private static void SetTextAlpha(TextMeshProUGUI text, float alpha)
