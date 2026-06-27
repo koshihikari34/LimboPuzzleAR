@@ -53,7 +53,6 @@ namespace LimboPuzzleAR.Main.Views
         private void Start()
         {
             SetResultVisible(false);
-            SetupTitleTransitionOverlay();
 
             _timeViewModel.IsTimeUp
                 .Where(isTimeUp => isTimeUp)
@@ -144,6 +143,11 @@ namespace LimboPuzzleAR.Main.Views
 
         private IEnumerator PlayTitleTransition()
         {
+            if (_titleTransitionCanvas == null)
+            {
+                SetupTitleTransitionOverlay();
+            }
+
             if (titleButton != null)
             {
                 titleButton.interactable = false;
@@ -170,6 +174,11 @@ namespace LimboPuzzleAR.Main.Views
 
         private void SetupTitleTransitionOverlay()
         {
+            if (_titleTransitionCanvas != null)
+            {
+                return;
+            }
+
             var transitionCanvasObject = new GameObject(
                 "TitleTransitionCanvas",
                 typeof(RectTransform),
