@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 
 namespace LimboPuzzleAR.Main.Views
 {
@@ -58,7 +60,7 @@ namespace LimboPuzzleAR.Main.Views
             var canvas = GetComponentInParent<Canvas>();
             if (canvas == null)
             {
-                canvas = FindFirstObjectByType<Canvas>();
+                canvas = FindTutorialCanvas();
             }
 
             if (canvas == null)
@@ -72,12 +74,63 @@ namespace LimboPuzzleAR.Main.Views
 
             if (!PlayerPrefs.HasKey(ViewedKey))
             {
-                Open();
+                StartCoroutine(OpenInitialTutorialNextFrame());
             }
             else
             {
                 Close(saveViewed: false);
             }
+        }
+
+        private IEnumerator OpenInitialTutorialNextFrame()
+        {
+            yield return null;
+            while (ARSession.state != ARSessionState.SessionTracking)
+            {
+                yield return null;
+            }
+
+            yield return new WaitForSecondsRealtime(0.25f);
+            Open();
+        }
+
+        private static Canvas FindTutorialCanvas()
+        {
+            var canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+            Canvas fallbackCanvas = null;
+
+            foreach (var canvas in canvases)
+            {
+                if (!IsTutorialCanvasCandidate(canvas))
+                {
+                    continue;
+                }
+
+                if (canvas.name == "MainCanvas")
+                {
+                    return canvas;
+                }
+
+                fallbackCanvas ??= canvas;
+            }
+
+            return fallbackCanvas;
+        }
+
+        private static bool IsTutorialCanvasCandidate(Canvas canvas)
+        {
+            if (canvas == null || !canvas.isActiveAndEnabled || !canvas.gameObject.activeInHierarchy)
+            {
+                return false;
+            }
+
+            if (canvas.name.Contains("Transition"))
+            {
+                return false;
+            }
+
+            return !canvas.TryGetComponent<CanvasGroup>(out var canvasGroup)
+                || canvasGroup.alpha > 0f;
         }
 
         public void Open()
