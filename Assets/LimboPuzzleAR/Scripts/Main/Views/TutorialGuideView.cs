@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 
 namespace LimboPuzzleAR.Main.Views
 {
@@ -84,6 +85,12 @@ namespace LimboPuzzleAR.Main.Views
         private IEnumerator OpenInitialTutorialNextFrame()
         {
             yield return null;
+            while (ARSession.state != ARSessionState.SessionTracking)
+            {
+                yield return null;
+            }
+
+            yield return new WaitForSecondsRealtime(0.25f);
             Open();
         }
 
